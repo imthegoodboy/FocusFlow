@@ -59,7 +59,7 @@ function DashboardContent() {
       <div className="grid xl:grid-cols-[2fr,1fr] gap-6">
         <div className="space-y-6">
           <PlanMyDayCard />
-          <TodayTasksList tasks={tasks} loading={tasksLoading} onRefresh={refresh} />
+          <TodayTasksList tasks={tasks} loading={tasksLoading} onRefresh={refresh} currentTime={now} />
           <FocusTimer activeTask={activeTask} />
         </div>
         <aside className="space-y-6">

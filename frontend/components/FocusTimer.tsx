@@ -11,33 +11,31 @@ export default function FocusTimer({ activeTask }: FocusTimerProps) {
   const [secondsLeft, setSecondsLeft] = useState<number>(0);
 
   useEffect(() => {
-    if (!activeTask) {
+    if (!activeTask || !activeTask.scheduled_end) {
       setSecondsLeft(0);
       return;
     }
-    const durationSeconds = activeTask.duration * 60;
-    setSecondsLeft(durationSeconds);
-  }, [activeTask]);
-
-  useEffect(() => {
-    if (!secondsLeft) return;
-    const interval = setInterval(() => {
-      setSecondsLeft((prev) => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
+    const updateRemaining = () => {
+      const end = new Date(activeTask.scheduled_end).getTime();
+      setSecondsLeft(Math.max(0, Math.round((end - Date.now()) / 1000)));
+    };
+    updateRemaining();
+    const interval = setInterval(updateRemaining, 1000);
     return () => clearInterval(interval);
-  }, [secondsLeft]);
+  }, [activeTask]);
 
   if (!activeTask) {
     return (
       <div className="bg-white rounded-2xl border border-slate-100 shadow-lg p-6 text-center text-slate-500">
-        Select a task and hit “Start timer” to begin a focused block.
+        All quiet for now. Your next planned block will start automatically at its scheduled time.
       </div>
     );
   }
 
+  const totalSeconds = (activeTask.duration || 0) * 60;
+  const progress = totalSeconds ? Math.max(0, (secondsLeft / totalSeconds) * 100) : 0;
   const minutes = Math.floor(secondsLeft / 60);
   const seconds = secondsLeft % 60;
-  const progress = Math.max(0, (secondsLeft / (activeTask.duration * 60)) * 100);
   const color =
     progress > 60 ? 'stroke-green-500' : progress > 30 ? 'stroke-amber-500' : 'stroke-rose-500';
 
@@ -45,19 +43,12 @@ export default function FocusTimer({ activeTask }: FocusTimerProps) {
     <div className="bg-white rounded-2xl border border-slate-100 shadow-lg p-6 flex items-center gap-6">
       <div className="relative w-32 h-32">
         <svg className="w-full h-full -rotate-90">
+          <circle cx="64" cy="64" r="60" className="stroke-slate-200" strokeWidth="8" fill="transparent" />
           <circle
             cx="64"
             cy="64"
             r="60"
-            className="stroke-slate-200"
-            strokeWidth="8"
-            fill="transparent"
-          />
-          <circle
-            cx="64"
-            cy="64"
-            r="60"
-            className={`${color}`}
+            className={color}
             strokeWidth="8"
             fill="transparent"
             strokeDasharray={2 * Math.PI * 60}
@@ -76,7 +67,7 @@ export default function FocusTimer({ activeTask }: FocusTimerProps) {
         <p className="text-sm uppercase tracking-[0.3em] text-primary-500 font-semibold">Focus mode</p>
         <h3 className="text-xl font-semibold text-slate-900">{activeTask.name}</h3>
         <p className="text-slate-500">
-          {activeTask.plan_reason || 'Stay focused and mark the task complete when done.'}
+          {activeTask.plan_reason || 'Timer kicks off automatically for every scheduled block.'}
         </p>
       </div>
     </div>

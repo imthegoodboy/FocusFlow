@@ -9,9 +9,10 @@ interface TodayTasksListProps {
   tasks: PlannedTask[];
   loading: boolean;
   onRefresh: () => void;
+  currentTime: number;
 }
 
-export default function TodayTasksList({ tasks, loading, onRefresh }: TodayTasksListProps) {
+export default function TodayTasksList({ tasks, loading, onRefresh, currentTime }: TodayTasksListProps) {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   const handleStatus = async (taskId: string, status: 'completed' | 'cancelled') => {
@@ -46,12 +47,12 @@ export default function TodayTasksList({ tasks, loading, onRefresh }: TodayTasks
             task.scheduled_start &&
             task.scheduled_end &&
             task.status === 'pending' &&
-            Date.now() >= new Date(task.scheduled_start).getTime() &&
-            Date.now() <= new Date(task.scheduled_end).getTime();
+            currentTime >= new Date(task.scheduled_start).getTime() &&
+            currentTime <= new Date(task.scheduled_end).getTime();
           const upcoming =
             task.scheduled_start &&
             task.status === 'pending' &&
-            Date.now() < new Date(task.scheduled_start).getTime();
+            currentTime < new Date(task.scheduled_start).getTime();
           return (
             <div
               key={task.id}
