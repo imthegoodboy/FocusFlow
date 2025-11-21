@@ -53,3 +53,13 @@ class PlanTaskItem(BaseModel):
 class PlanDayRequest(BaseModel):
     tasks: List[PlanTaskItem]
 
+
+class PlannedTaskInput(BaseModel):
+    name: str
+    duration: int
+    priority: Literal["low", "medium", "high"]
+    scheduled_start: datetime
+    scheduled_end: datetime
+    plan_reason: Optional[str] = None
+    sequence: Optional[int] = None
+
