@@ -1,0 +1,196 @@
+PROBLEM STATEMENT – 8
+AI-BASED STUDENT PRODUCTIVITY & ROUTINE OPTIMIZER
+Objective
+Build an AI-driven system that:
+
+Tracks a student’s daily routine
+Analyses their productive & non-productive periods
+Suggests the best time for studying, exercising, sleeping, etc.
+Optimizes their day using automated recommendations
+Prevents schedule conflicts
+Monitors progress with analytics dashboards
+
+Recommended Stack:
+React/Next.js + Node.js/Laravel + Firebase/MySQL + Tailwind CSS
+Core Features
+Student Registration & Profile Setup
+
+Student profile with goals
+Add exam dates, semester plans, study targets
+Activity history linked to profile
+Duplicate entry prevention
+
+Task Management System
+Students can add:
+
+Task name
+Duration
+Deadline
+Priority
+Category (Study, Health, Personal, etc.)
+
+Mandatory Rules:
+
+No task without deadline
+High priority tasks must be sorted automatically
+
+Routine Logging Module
+Students log:
+
+Wakeup & sleep timings
+Study hours
+Screen time
+Exercise
+Breaks
+Class timings
+
+System must store timestamps and durations.
+AI-Based Time Recommendation Engine
+System must analyze past data and recommend:
+
+Most productive hours
+Best time to study
+When to take breaks
+When to avoid tasks (low focus period)
+
+Example Recommendations:
+
+“Your focus is highest between 7–9 PM. Add math practice here.”
+“Avoid study between 3–4 PM due to low productivity.”
+“Sleep earlier, performance drops on 6-hr sleep days.”
+
+Prediction Logic (any one):
+
+Pattern-based scoring
+Rule-based AI
+Time-of-day productivity scoring
+Simple ML model (optional)
+
+Smart Scheduling
+System must:
+
+Avoid overlapping tasks
+Recommend ideal time slots
+Enforce minimum rest periods between long tasks
+Auto-reschedule delayed tasks
+
+Analytics Dashboard
+Graphs for:
+
+Daily/Weekly productivity
+High & low focus hours
+Completed vs pending tasks
+Sleep vs performance correlation
+Monthly progress chart
+
+Notifications & Alerts
+
+“A free 1-hour slot available now — recommended study time.”
+“High-priority task deadline in 4 hours.”
+“Low sleep detected — avoid heavy tasks today.”
+
+Mandatory Constraints
+Task Constraints
+
+No overlapping schedules
+Mandatory deadline
+Auto-priority sorting
+
+Routine Constraints
+
+Must store daily logs
+Detect missing entries
+
+AI Constraints
+Must implement at least one predictive logic:
+
+Pattern detection
+Rule-based suggestion
+Time scoring model
+
+Analytics Constraints
+
+All charts must reflect stored data accurately
+Weekly & monthly views
+
+Milestones
+Milestone 1: Task & Routine Module
+
+Task creation
+Routine logging
+Priority rules
+Conflict detection
+
+Key Tests:
+✓ No overlapping tasks
+✓ Priority sorting correctness
+✓ Daily logs stored correctly
+Milestone 2: AI Recommendation Engine
+
+Pattern analysis
+Suggestion generation
+Productivity scoring
+
+Key Tests:
+✓ Accurate productive hour detection
+✓ Correct suggestion logic
+✓ Handles missing data gracefully
+Milestone 3: Dashboard + Notifications
+
+Analytics charts
+Performance summaries
+Smart alerts
+
+Key Tests:
+✓ Graph accuracy
+✓ Correct alert timings
+✓ Daily/weekly productivity calculation
+Evaluation Criteria
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CategoryWeightAI Logic & Recommendation Accuracy30%Task & Routine Engine25%Analytics Dashboard20%Code Quality & Architecture15%UI/UX & Presentation10%
+Final Deliverables
+
+Working Application / API
+Documentation
+AI logic
+Routine flow
+Task scheduling logic
+DB schema
+
+3–5 min demo video
+GitHub Repository
+
+End Goal
+A smart productivity system that:
+✓ Understands student habits
+✓ Improves academic performance
+✓ Suggests best study times automatically
+✓ Creates a balanced, optimized daily routine
