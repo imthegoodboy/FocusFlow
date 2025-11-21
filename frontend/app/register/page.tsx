@@ -30,8 +30,8 @@ export default function RegisterPage() {
 
     try {
       await register(email, password);
-      toast.success('Registration successful!');
-      router.push('/profile-setup');
+      toast.success('Registration successful! Please login.');
+      router.push('/login');
     } catch (error: any) {
       toast.error(error.response?.data?.detail || 'Registration failed');
     } finally {

@@ -3,11 +3,16 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { isAuthenticated, getCurrentUser } from '@/lib/auth';
+import api from '@/lib/api';
 
-export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+  requireProfile?: boolean;
+}
+
+export default function ProtectedRoute({ children, requireProfile = true }: ProtectedRouteProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -22,12 +27,24 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
         return;
       }
 
-      setUser(currentUser);
+      if (requireProfile) {
+        try {
+          const res = await api.get('/api/student/profile');
+          if (!res.data.profile) {
+            router.push('/onboarding');
+            return;
+          }
+        } catch {
+          router.push('/onboarding');
+          return;
+        }
+      }
+
       setLoading(false);
     };
 
     checkAuth();
-  }, [router]);
+  }, [router, requireProfile]);
 
   if (loading) {
     return (
