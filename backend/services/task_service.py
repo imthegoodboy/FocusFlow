@@ -1,4 +1,4 @@
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, time, timedelta, timezone
 from typing import List, Optional
 
 try:
@@ -14,7 +14,7 @@ from services.scheduler import check_conflicts, schedule_task
 
 def _ensure_naive(dt: datetime) -> datetime:
     if dt.tzinfo:
-        return dt.astimezone(datetime.utcnow().astimezone().tzinfo).replace(tzinfo=None)
+        return dt.astimezone(timezone.utc).replace(tzinfo=None)
     return dt
 
 
