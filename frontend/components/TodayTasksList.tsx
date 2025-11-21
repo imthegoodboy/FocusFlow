@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import api from '@/lib/api';
 import { PlannedTask } from '@/hooks/useTodayTasks';
@@ -14,12 +14,22 @@ interface TodayTasksListProps {
 
 export default function TodayTasksList({ tasks, loading, onRefresh, currentTime }: TodayTasksListProps) {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [celebration, setCelebration] = useState<'single' | 'all' | null>(null);
+
+  useEffect(() => {
+    if (tasks.length > 0 && tasks.every((task) => task.status === 'completed')) {
+      setCelebration('all');
+    }
+  }, [tasks]);
 
   const handleStatus = async (taskId: string, status: 'completed' | 'cancelled') => {
     setUpdatingId(taskId);
     try {
       await api.put(`/api/tasks/${taskId}`, { status });
       toast.success(status === 'completed' ? 'Nice work!' : 'Task skipped.');
+      if (status === 'completed') {
+        setCelebration('single');
+      }
       onRefresh();
     } catch (error: any) {
       toast.error(error.response?.data?.detail || 'Unable to update task.');
@@ -100,6 +110,33 @@ export default function TodayTasksList({ tasks, loading, onRefresh, currentTime 
           );
         })}
       </div>
+      )}
+      {celebration && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-3xl shadow-2xl p-6 text-center space-y-4 max-w-md">
+            <div className="w-56 h-56 mx-auto">
+              <iframe
+                src="https://lottie.host/embed/7323a841-b2f4-4dc3-be96-0803db57e5e5/kNOzEYcYFL.lottie"
+                className="w-full h-full border-0"
+                title="Celebration"
+              />
+            </div>
+            <h3 className="text-2xl font-bold text-slate-900">
+              {celebration === 'all' ? 'Legend! All tasks complete.' : 'Task done! Keep it up.'}
+            </h3>
+            <p className="text-slate-500">
+              {celebration === 'all'
+                ? 'Your streak has been updated and analytics reflect the win.'
+                : 'We logged this completion and nudged your streak.'}
+            </p>
+            <button
+              onClick={() => setCelebration(null)}
+              className="px-4 py-2 rounded-xl bg-primary-500 text-white font-semibold hover:bg-primary-600"
+            >
+              Continue
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

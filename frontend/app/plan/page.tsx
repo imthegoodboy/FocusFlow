@@ -2,16 +2,27 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useStudentProfile } from '@/hooks/useStudentProfile';
-import { PlannedTask } from '@/hooks/useTodayTasks';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
 
 type DraftTask = {
   name: string;
   duration: number;
+  priority: 'high' | 'medium' | 'low';
+};
+
+type PreviewTask = {
+  name: string;
+  duration: number;
+  priority: 'high' | 'medium' | 'low';
+  scheduled_start: string;
+  scheduled_end: string;
+  plan_reason?: string;
+  sequence?: number;
 };
 
 const MAX_TASKS = 6;
@@ -19,6 +30,7 @@ const MAX_TASKS = 6;
 const createEmptyTask = (): DraftTask => ({
   name: '',
   duration: 45,
+  priority: 'medium',
 });
 
 export default function PlanPage() {
@@ -51,9 +63,11 @@ function PlanPageContent() {
 }
 
 function PlanBuilder() {
+  const router = useRouter();
   const [tasks, setTasks] = useState<DraftTask[]>([createEmptyTask()]);
   const [planning, setPlanning] = useState(false);
-  const [planResult, setPlanResult] = useState<PlannedTask[]>([]);
+  const [confirming, setConfirming] = useState(false);
+  const [planResult, setPlanResult] = useState<PreviewTask[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const handleTaskChange = (index: number, field: keyof DraftTask, value: string) => {
@@ -62,7 +76,7 @@ function PlanBuilder() {
         idx === index
           ? {
               ...task,
-              [field]: field === 'duration' ? Number(value) : value,
+              [field]: field === 'duration' ? Number(value) : (value as DraftTask[keyof DraftTask]),
             }
           : task,
       );
@@ -95,14 +109,18 @@ function PlanBuilder() {
     setPlanning(true);
     setError(null);
     try {
-      const response = await api.post('/api/tasks/plan-day', {
+      const response = await api.post('/api/tasks/plan-preview', {
         tasks: cleaned.map((task) => ({
           name: task.name.trim(),
           duration: task.duration,
+          priority: task.priority,
         })),
       });
-      setPlanResult(response.data.plan || []);
-      toast.success('Day planned! Review the schedule below.');
+      const preview = (response.data.plan || []).map((item: PreviewTask) => ({
+        ...item,
+      }));
+      setPlanResult(preview);
+      toast.success('Plan generated! Review and edit below.');
     } catch (err: any) {
       const message = err.response?.data?.detail || 'Unable to plan day right now.';
       setError(message);
@@ -110,6 +128,65 @@ function PlanBuilder() {
     } finally {
       setPlanning(false);
     }
+  };
+
+  const handleScheduleEdit = (index: number, type: 'time' | 'duration', value: string) => {
+    setPlanResult((prev) =>
+      prev.map((task, idx) => {
+        if (idx !== index) return task;
+        if (type === 'time') {
+          const [hours, minutes] = value.split(':').map(Number);
+          if (Number.isNaN(hours) || Number.isNaN(minutes)) return task;
+          const start = new Date(task.scheduled_start);
+          start.setHours(hours, minutes, 0, 0);
+          const end = new Date(start.getTime() + task.duration * 60000);
+          return { ...task, scheduled_start: start.toISOString(), scheduled_end: end.toISOString() };
+        }
+        const mins = Number(value);
+        if (!mins || mins < 10) return task;
+        const start = new Date(task.scheduled_start);
+        const end = new Date(start.getTime() + mins * 60000);
+        return { ...task, duration: mins, scheduled_end: end.toISOString() };
+      }),
+    );
+  };
+
+  const handlePriorityEdit = (index: number, priority: 'high' | 'medium' | 'low') => {
+    setPlanResult((prev) => prev.map((task, idx) => (idx === index ? { ...task, priority } : task)));
+  };
+
+  const handleConfirm = async () => {
+    if (!planResult.length) {
+      toast.error('Generate a plan first.');
+      return;
+    }
+    setConfirming(true);
+    try {
+      await api.post(
+        '/api/tasks/plan-day',
+        planResult.map((task) => ({
+          name: task.name,
+          duration: task.duration,
+          priority: task.priority,
+          scheduled_start: task.scheduled_start,
+          scheduled_end: task.scheduled_end,
+          plan_reason: task.plan_reason,
+          sequence: task.sequence,
+        })),
+      );
+      toast.success('Today’s schedule confirmed!');
+      router.push('/dashboard');
+    } catch (err: any) {
+      toast.error(err.response?.data?.detail || 'Unable to confirm schedule.');
+    } finally {
+      setConfirming(false);
+    }
+  };
+
+  const formatTime = (iso: string) => {
+    if (!iso) return '';
+    const date = new Date(iso);
+    return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
   };
 
   return (
@@ -120,7 +197,7 @@ function PlanBuilder() {
           <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mt-2">List the tasks you’d like to finish</h1>
           <p className="text-slate-600 mt-2">
             FocusFlow analyses your wake time, class schedule, and breaks to propose the best order and timing. Add up
-            to six tasks—no priority selection required.
+            to six tasks and tell us how urgent each one feels.
           </p>
         </div>
 
@@ -128,7 +205,7 @@ function PlanBuilder() {
           {tasks.map((task, index) => (
             <div
               key={index}
-              className="grid md:grid-cols-[2fr,1fr,auto] gap-4 items-end border border-slate-100 rounded-2xl p-4"
+              className="grid md:grid-cols-[2fr,1fr,1fr,auto] gap-4 items-end border border-slate-100 rounded-2xl p-4"
             >
               <div>
                 <label className="text-xs font-semibold text-slate-500">Task name</label>
@@ -150,6 +227,18 @@ function PlanBuilder() {
                   onChange={(e) => handleTaskChange(index, 'duration', e.target.value)}
                   className="w-full border border-slate-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-primary-400 outline-none"
                 />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-slate-500">Priority</label>
+                <select
+                  value={task.priority}
+                  onChange={(e) => handleTaskChange(index, 'priority', e.target.value)}
+                  className="w-full border border-slate-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-primary-400 outline-none"
+                >
+                  <option value="high">High</option>
+                  <option value="medium">Medium</option>
+                  <option value="low">Low</option>
+                </select>
               </div>
               <button
                 type="button"
@@ -188,38 +277,75 @@ function PlanBuilder() {
       {planResult.length > 0 && (
         <div className="bg-white rounded-3xl shadow-xl border border-primary-100 p-8 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-slate-900">AI schedule for today</h2>
-            <span className="text-sm text-slate-500">
-              Also visible on the{' '}
-              <Link href="/dashboard" className="text-primary-600 underline">
-                dashboard
-              </Link>
-            </span>
+            <div>
+              <h2 className="text-2xl font-bold text-slate-900">AI schedule for today</h2>
+              <p className="text-sm text-slate-500">Adjust timings if needed, then confirm.</p>
+            </div>
+            <button
+              onClick={handleConfirm}
+              disabled={confirming}
+              className="px-5 py-2 rounded-xl bg-primary-500 text-white font-semibold hover:bg-primary-600 disabled:opacity-60"
+            >
+              {confirming ? 'Saving…' : 'Confirm today’s schedule'}
+            </button>
           </div>
           <div className="space-y-3">
-            {planResult.map((task) => (
+            {planResult.map((task, index) => (
               <div
-                key={task.id}
-                className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 border border-slate-100 rounded-2xl px-4 py-3 bg-slate-50"
+                key={`${task.name}-${index}`}
+                className="flex flex-col gap-4 border border-slate-100 rounded-2xl px-4 py-3 bg-slate-50"
               >
-                <div>
-                  <p className="text-sm uppercase tracking-wide text-primary-500 font-semibold">
-                    {task.sequence ? `Step ${task.sequence}` : 'Task'}
-                  </p>
-                  <p className="text-lg font-semibold text-slate-900">{task.name}</p>
-                  {task.plan_reason && <p className="text-sm text-slate-500">{task.plan_reason}</p>}
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <p className="text-xs uppercase tracking-wide text-primary-500 font-semibold">
+                      {task.sequence ? `Step ${task.sequence}` : 'Task'}
+                    </p>
+                    <p className="text-lg font-semibold text-slate-900">{task.name}</p>
+                  </div>
+                  <div className="text-sm text-slate-600">
+                    <label className="text-xs font-semibold text-slate-500 block">Priority</label>
+                    <select
+                      value={task.priority}
+                      onChange={(e) => handlePriorityEdit(index, e.target.value as 'high' | 'medium' | 'low')}
+                      className="border border-slate-200 rounded-lg px-3 py-1 focus:ring-2 focus:ring-primary-400 outline-none"
+                    >
+                      <option value="high">High</option>
+                      <option value="medium">Medium</option>
+                      <option value="low">Low</option>
+                    </select>
+                  </div>
                 </div>
-                <div className="text-right text-slate-600 text-sm">
-                  <p>
-                    {task.scheduled_start
-                      ? new Date(task.scheduled_start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                      : '—'}{' '}
-                    –{' '}
-                    {task.scheduled_end
-                      ? new Date(task.scheduled_end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                      : '—'}
-                  </p>
-                  <p>{task.duration} mins</p>
+                {task.plan_reason && <p className="text-sm text-slate-500">{task.plan_reason}</p>}
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="text-xs font-semibold text-slate-500">Start time</label>
+                    <input
+                      type="time"
+                      value={formatTime(task.scheduled_start)}
+                      onChange={(e) => handleScheduleEdit(index, 'time', e.target.value)}
+                      className="w-full border border-slate-200 rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-400 outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-slate-500">Duration (mins)</label>
+                    <input
+                      type="number"
+                      min={10}
+                      max={300}
+                      value={task.duration}
+                      onChange={(e) => handleScheduleEdit(index, 'duration', e.target.value)}
+                      className="w-full border border-slate-200 rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-400 outline-none"
+                    />
+                  </div>
+                  <div className="text-sm text-slate-600">
+                    <p>
+                      Ends at{' '}
+                      {task.scheduled_end
+                        ? new Date(task.scheduled_end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                        : '—'}
+                    </p>
+                    <p>Sequence #{task.sequence}</p>
+                  </div>
                 </div>
               </div>
             ))}

@@ -96,6 +96,7 @@ def update_task(task_id: str, user_id: str, task_data: TaskUpdate) -> Optional[d
         task = get_task(task_id, user_id)
         if task_data.status in {"completed", "cancelled"}:
             _log_task_history(user_id, task_id, task_data.status or "")
+            update_streaks(user_id)
         return task
     return None
 
