@@ -1,13 +1,13 @@
-from pydantic import BaseModel
-from typing import Optional, List
-from datetime import datetime, date
-try:
-    from bson import ObjectId
-except ImportError:
-    from pymongo import ObjectId
+from datetime import date, datetime
+from typing import List, Optional
+
+from pydantic import BaseModel, Field, ConfigDict
+
 
 class RoutineLog(BaseModel):
-    id: Optional[ObjectId] = None
+    model_config = ConfigDict(populate_by_name=True, from_attributes=True)
+
+    id: Optional[str] = Field(default=None, alias="_id")
     user_id: str
     date: date
     wakeup_time: Optional[str] = None  # "07:00"
@@ -22,9 +22,6 @@ class RoutineLog(BaseModel):
     created_at: datetime = datetime.now()
     updated_at: datetime = datetime.now()
 
-    class Config:
-        arbitrary_types_allowed = True
-        json_encoders = {ObjectId: str}
 
 class RoutineLogCreate(BaseModel):
     date: date
@@ -38,7 +35,10 @@ class RoutineLogCreate(BaseModel):
     productivity_score: Optional[float] = None
     notes: Optional[str] = None
 
+
 class RoutineLogResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: str
     user_id: str
     date: date
@@ -53,7 +53,4 @@ class RoutineLogResponse(BaseModel):
     notes: Optional[str] = None
     created_at: datetime
     updated_at: datetime
-
-    class Config:
-        json_encoders = {ObjectId: str}
 
