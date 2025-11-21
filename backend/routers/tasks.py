@@ -19,10 +19,11 @@ router = APIRouter(prefix="/api/tasks", tags=["tasks"])
 @router.post("", response_model=dict)
 async def create_new_task(task_data: TaskCreate, user_id: str = Depends(get_current_user_id)):
     """Create a new task"""
-    # Validate deadline
-    if task_data.deadline < datetime.now():
+    deadline = task_data.deadline
+    now = datetime.now(deadline.tzinfo) if deadline.tzinfo else datetime.now()
+    if deadline <= now:
         raise HTTPException(status_code=400, detail="Deadline must be in the future")
-    
+
     task = create_task(user_id, task_data)
     return task
 

@@ -13,6 +13,13 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  ScatterChart,
+  Scatter,
+  AreaChart,
+  Area,
 } from 'recharts';
 
 export default function AnalyticsSection() {
@@ -20,6 +27,8 @@ export default function AnalyticsSection() {
   const [weeklyData, setWeeklyData] = useState<any[]>([]);
   const [taskStats, setTaskStats] = useState<any>(null);
   const [focusHours, setFocusHours] = useState<any>(null);
+  const [sleepData, setSleepData] = useState<any[]>([]);
+  const [monthlyProgress, setMonthlyProgress] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -28,17 +37,21 @@ export default function AnalyticsSection() {
 
   const loadAnalytics = async () => {
     try {
-      const [daily, weekly, tasks, focus] = await Promise.all([
+      const [daily, weekly, tasks, focus, sleep, monthly] = await Promise.all([
         api.get('/api/analytics/daily-productivity?days=7'),
         api.get('/api/analytics/weekly-productivity?weeks=4'),
         api.get('/api/analytics/task-statistics'),
         api.get('/api/analytics/focus-hours'),
+        api.get('/api/analytics/sleep-performance'),
+        api.get('/api/analytics/monthly-progress'),
       ]);
 
       setDailyData(daily.data.data || []);
       setWeeklyData(weekly.data.data || []);
       setTaskStats(tasks.data);
       setFocusHours(focus.data);
+      setSleepData(sleep.data.data || []);
+      setMonthlyProgress(monthly.data.data || []);
     } catch (error) {
       console.error('Failed to load analytics', error);
     } finally {
@@ -140,6 +153,79 @@ export default function AnalyticsSection() {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Completed vs Pending */}
+      {taskStats && (
+        <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+          <h3 className="text-lg font-semibold mb-4">Completed vs Pending Tasks</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={[
+                  { name: 'Completed', value: taskStats.completed },
+                  { name: 'Pending', value: taskStats.pending },
+                  { name: 'Cancelled', value: taskStats.cancelled },
+                ]}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={110}
+                label
+              >
+                <Cell fill="#22c55e" />
+                <Cell fill="#f97316" />
+                <Cell fill="#94a3b8" />
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+
+      {/* Sleep vs Performance */}
+      {sleepData.length > 0 && (
+        <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+          <h3 className="text-lg font-semibold mb-4">Sleep vs Performance Correlation</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <ScatterChart>
+              <CartesianGrid />
+              <XAxis type="number" dataKey="sleep_hours" name="Sleep (hrs)" />
+              <YAxis type="number" dataKey="performance_score" name="Performance" />
+              <Tooltip cursor={{ strokeDasharray: '3 3' }} />
+              <Scatter data={sleepData} fill="#6366f1" />
+            </ScatterChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+
+      {/* Monthly Progress */}
+      {monthlyProgress.length > 0 && (
+        <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+          <h3 className="text-lg font-semibold mb-4">Monthly Progress</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <AreaChart data={monthlyProgress}>
+              <defs>
+                <linearGradient id="colorProgress" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#f97316" stopOpacity={0.8} />
+                  <stop offset="95%" stopColor="#f97316" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Area
+                type="monotone"
+                dataKey="progress_score"
+                stroke="#f97316"
+                fillOpacity={1}
+                fill="url(#colorProgress)"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
         </div>
       )}
     </div>

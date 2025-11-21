@@ -3,12 +3,14 @@
 import { useState } from 'react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import DashboardLayout from '@/components/DashboardLayout';
-import TasksSection from '@/components/TasksSection';
-import RoutineSection from '@/components/RoutineSection';
 import AnalyticsSection from '@/components/AnalyticsSection';
 import StreaksDisplay from '@/components/StreaksDisplay';
-import ProfileCard from '@/components/ProfileCard';
+import PlanMyDayCard from '@/components/PlanMyDayCard';
+import TodayTasksList from '@/components/TodayTasksList';
+import FocusTimer from '@/components/FocusTimer';
 import { useStudentProfile } from '@/hooks/useStudentProfile';
+import { useTodayTasks } from '@/hooks/useTodayTasks';
+import { PlannedTask } from '@/hooks/useTodayTasks';
 
 export default function DashboardPage() {
   return (
@@ -19,8 +21,9 @@ export default function DashboardPage() {
 }
 
 function DashboardContent() {
-  const [activeTab, setActiveTab] = useState<'tasks' | 'routine' | 'analytics'>('tasks');
   const { profile, loading } = useStudentProfile();
+  const { tasks, loading: tasksLoading, refresh } = useTodayTasks();
+  const [activeTask, setActiveTask] = useState<PlannedTask | null>(null);
 
   if (loading) {
     return (
@@ -36,33 +39,19 @@ function DashboardContent() {
   return (
     <DashboardLayout profile={profile}>
       <div className="grid xl:grid-cols-[2fr,1fr] gap-6">
-        <section className="space-y-6">
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex space-x-4 border-b border-gray-200 mb-6 overflow-x-auto">
-              {(['tasks', 'routine', 'analytics'] as const).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`px-6 py-3 font-semibold whitespace-nowrap transition-colors ${
-                    activeTab === tab
-                      ? 'text-primary-600 border-b-2 border-primary-600'
-                      : 'text-gray-500 hover:text-primary-600'
-                  }`}
-                >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                </button>
-              ))}
-            </div>
-
-            {activeTab === 'tasks' && <TasksSection />}
-            {activeTab === 'routine' && <RoutineSection />}
-            {activeTab === 'analytics' && <AnalyticsSection />}
-          </div>
-        </section>
-
+        <div className="space-y-6">
+          <PlanMyDayCard onPlanComplete={refresh} recentPlan={tasks} />
+          <FocusTimer activeTask={activeTask} />
+          <AnalyticsSection />
+        </div>
         <aside className="space-y-6">
-          <ProfileCard profile={profile} />
-          <StreaksDisplay variant="vertical" />
+          <StreaksDisplay />
+          <TodayTasksList
+            tasks={tasks}
+            loading={tasksLoading}
+            onRefresh={refresh}
+            onStartTimer={(task) => setActiveTask(task)}
+          />
         </aside>
       </div>
     </DashboardLayout>
