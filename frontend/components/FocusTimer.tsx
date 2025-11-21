@@ -15,8 +15,9 @@ export default function FocusTimer({ activeTask }: FocusTimerProps) {
       setSecondsLeft(0);
       return;
     }
+    const endTime = activeTask.scheduled_end;
     const updateRemaining = () => {
-      const end = new Date(activeTask.scheduled_end).getTime();
+      const end = new Date(endTime).getTime();
       setSecondsLeft(Math.max(0, Math.round((end - Date.now()) / 1000)));
     };
     updateRemaining();
