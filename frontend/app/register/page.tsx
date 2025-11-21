@@ -43,6 +43,16 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-white px-4">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
         <div className="text-center mb-8">
+          <div className="mb-4">
+            <div className="w-20 h-20 mx-auto bg-primary-500 rounded-full relative overflow-hidden shadow-lg animate-bounce-slow">
+              {/* Simple Cat Face */}
+              <div className="absolute -top-3 left-3 w-0 h-0 border-l-[12px] border-l-transparent border-r-[12px] border-r-transparent border-b-[18px] border-b-primary-300"></div>
+              <div className="absolute -top-3 right-3 w-0 h-0 border-l-[12px] border-l-transparent border-r-[12px] border-r-transparent border-b-[18px] border-b-primary-300"></div>
+              <div className="absolute top-4 left-4 w-3 h-3 bg-primary-700 rounded-full"></div>
+              <div className="absolute top-4 right-4 w-3 h-3 bg-primary-700 rounded-full"></div>
+              <div className="absolute top-7 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-primary-400 rounded-full"></div>
+            </div>
+          </div>
           <h1 className="text-3xl font-bold text-primary-600 mb-2">Create Account</h1>
           <p className="text-gray-600">Join FocusFlow to optimize your productivity</p>
         </div>
