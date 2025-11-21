@@ -1,6 +1,9 @@
 from datetime import datetime
 from typing import List, Optional
-from bson import ObjectId
+try:
+    from bson import ObjectId
+except ImportError:
+    from pymongo import ObjectId
 from database import tasks_collection
 from models.task import Task, TaskCreate, TaskUpdate
 from services.scheduler import check_conflicts, schedule_task

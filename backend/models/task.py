@@ -1,7 +1,10 @@
 from pydantic import BaseModel
 from typing import Optional, Literal
 from datetime import datetime
-from bson import ObjectId
+try:
+    from bson import ObjectId
+except ImportError:
+    from pymongo import ObjectId
 
 class Task(BaseModel):
     id: Optional[ObjectId] = None

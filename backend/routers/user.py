@@ -3,7 +3,10 @@ from models.user import StudentProfile, SurveyResponse
 from database import users_collection
 from auth import get_current_user_id
 from datetime import datetime
-from bson import ObjectId
+try:
+    from bson import ObjectId
+except ImportError:
+    from pymongo import ObjectId
 
 router = APIRouter(prefix="/api/user", tags=["user"])
 

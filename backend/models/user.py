@@ -1,7 +1,10 @@
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List
 from datetime import datetime
-from bson import ObjectId
+try:
+    from bson import ObjectId
+except ImportError:
+    from pymongo import ObjectId
 
 class PyObjectId(ObjectId):
     @classmethod

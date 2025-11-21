@@ -5,7 +5,10 @@ from models.user import UserCreate, UserLogin, UserResponse
 from database import users_collection
 from auth import get_password_hash, verify_password, create_access_token, get_current_user
 from config import settings
-from bson import ObjectId
+try:
+    from bson import ObjectId
+except ImportError:
+    from pymongo import ObjectId
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
