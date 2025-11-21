@@ -28,6 +28,41 @@ export default function TodayTasksList({ tasks, loading, onRefresh, onStartTimer
     }
   }
 
+  const handleEditSlot = async (task: PlannedTask) => {
+    if (!task.scheduled_start) {
+      toast.error('This task is not scheduled yet.');
+      return;
+    }
+    const startDate = new Date(task.scheduled_start);
+    const defaultValue = `${startDate.getHours().toString().padStart(2, '0')}:${startDate
+      .getMinutes()
+      .toString()
+      .padStart(2, '0')}`;
+    const userInput = prompt('Enter new start time (HH:MM)', defaultValue);
+    if (!userInput) return;
+    const [hours, minutes] = userInput.split(':').map((v) => Number(v));
+    if (Number.isNaN(hours) || Number.isNaN(minutes)) {
+      toast.error('Invalid time format.');
+      return;
+    }
+    const newStart = new Date(startDate);
+    newStart.setHours(hours, minutes, 0, 0);
+    const newEnd = new Date(newStart.getTime() + task.duration * 60000);
+    setUpdatingId(task.id);
+    try {
+      await api.put(`/api/tasks/${task.id}`, {
+        scheduled_start: newStart.toISOString(),
+        scheduled_end: newEnd.toISOString(),
+      });
+      toast.success('Schedule updated.');
+      onRefresh();
+    } catch (error: any) {
+      toast.error(error.response?.data?.detail || 'Unable to update schedule.');
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-lg p-6 space-y-4">
       <div className="flex items-center justify-between">
@@ -66,6 +101,13 @@ export default function TodayTasksList({ tasks, loading, onRefresh, onStartTimer
                 {task.plan_reason && <p className="text-sm text-slate-500">{task.plan_reason}</p>}
               </div>
               <div className="flex items-center gap-2 text-2xl">
+                <button
+                  onClick={() => handleEditSlot(task)}
+                  className="text-xs text-slate-600 underline decoration-dotted mr-2"
+                  disabled={updatingId === task.id}
+                >
+                  Edit slot
+                </button>
                 <button
                   disabled={updatingId === task.id}
                   onClick={() => handleStatus(task.id, 'completed')}
