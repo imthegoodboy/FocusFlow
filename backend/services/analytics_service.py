@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, date
-from typing import Dict, List
+from typing import Dict, List, Optional
 from database import routine_logs_collection, tasks_collection, streaks_collection
 
 def get_daily_productivity(user_id: str, days: int = 7) -> List[Dict]:
