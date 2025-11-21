@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import DashboardLayout from '@/components/DashboardLayout';
-import AnalyticsSection from '@/components/AnalyticsSection';
 import StreaksDisplay from '@/components/StreaksDisplay';
 import PlanMyDayCard from '@/components/PlanMyDayCard';
 import TodayTasksList from '@/components/TodayTasksList';
@@ -40,18 +39,17 @@ function DashboardContent() {
     <DashboardLayout profile={profile}>
       <div className="grid xl:grid-cols-[2fr,1fr] gap-6">
         <div className="space-y-6">
-          <PlanMyDayCard onPlanComplete={refresh} recentPlan={tasks} />
-          <FocusTimer activeTask={activeTask} />
-          <AnalyticsSection />
-        </div>
-        <aside className="space-y-6">
-          <StreaksDisplay />
+          <PlanMyDayCard />
           <TodayTasksList
             tasks={tasks}
             loading={tasksLoading}
             onRefresh={refresh}
             onStartTimer={(task) => setActiveTask(task)}
           />
+          <FocusTimer activeTask={activeTask} />
+        </div>
+        <aside className="space-y-6">
+          <StreaksDisplay />
         </aside>
       </div>
     </DashboardLayout>

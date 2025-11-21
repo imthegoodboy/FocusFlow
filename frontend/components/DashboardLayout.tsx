@@ -1,5 +1,8 @@
 'use client';
 
+'use client';
+
+import { usePathname } from 'next/navigation';
 import { logout } from '@/lib/auth';
 import { StudentProfile } from '@/hooks/useStudentProfile';
 import Link from 'next/link';
@@ -11,7 +14,16 @@ interface DashboardLayoutProps {
   profile: StudentProfile | null;
 }
 
+const navLinks = [
+  { href: '/dashboard', label: 'Dashboard' },
+  { href: '/plan', label: 'Plan day' },
+  { href: '/analytics', label: 'Analytics' },
+  { href: '/onboarding', label: 'Profile' },
+];
+
 export default function DashboardLayout({ children, profile }: DashboardLayoutProps) {
+  const pathname = usePathname();
+
   return (
     <div className="min-h-screen bg-slate-50">
       <header className="bg-white border-b border-slate-100 sticky top-0 z-30">
@@ -21,15 +33,18 @@ export default function DashboardLayout({ children, profile }: DashboardLayoutPr
               FocusFlow
             </Link>
             <nav className="hidden md:flex gap-6 text-sm font-semibold text-slate-600">
-              <Link href="/dashboard" className="hover:text-primary-600">
-                Dashboard
-              </Link>
-              <Link href="/onboarding" className="hover:text-primary-600">
-                Profile
-              </Link>
-              <Link href="/home#workflow" className="hover:text-primary-600">
-                Workflow
-              </Link>
+              {navLinks.map((link) => {
+                const active = pathname === link.href;
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={active ? 'text-primary-600' : 'hover:text-primary-600'}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
             </nav>
           </div>
           <div className="flex items-center gap-4">
