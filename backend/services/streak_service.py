@@ -24,8 +24,8 @@ def update_streaks(user_id: str):
         "task_streak": task_streak,
         "logging_streak": logging_streak,
         "overall_streak": overall_streak,
-        "last_updated": today,
-        "updated_at": datetime.now()
+        "last_updated": today.isoformat(),
+        "updated_at": datetime.utcnow(),
     }
     
     streaks_collection.update_one(
@@ -44,7 +44,7 @@ def calculate_study_streak(user_id: str, today: date) -> int:
     while True:
         log = routine_logs_collection.find_one({
             "user_id": user_id,
-            "date": current_date
+            "date": current_date.isoformat()
         })
         
         if log and log.get("study_hours", 0) > 0:
@@ -96,7 +96,7 @@ def calculate_logging_streak(user_id: str, today: date) -> int:
     while True:
         log = routine_logs_collection.find_one({
             "user_id": user_id,
-            "date": current_date
+            "date": current_date.isoformat()
         })
         
         if log:
@@ -124,6 +124,6 @@ def get_streaks(user_id: str) -> Dict:
         "task_streak": streak_data.get("task_streak", 0),
         "logging_streak": streak_data.get("logging_streak", 0),
         "overall_streak": streak_data.get("overall_streak", 0),
-        "last_updated": streak_data.get("last_updated", date.today()).isoformat() if isinstance(streak_data.get("last_updated"), date) else str(streak_data.get("last_updated", date.today()))
+        "last_updated": streak_data.get("last_updated") or date.today().isoformat()
     }
 
