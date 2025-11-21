@@ -1,6 +1,9 @@
 from datetime import datetime, date
 from typing import List, Optional
-from bson import ObjectId
+try:
+    from bson import ObjectId
+except ImportError:
+    from pymongo import ObjectId
 from database import routine_logs_collection
 
 def create_routine_log(user_id: str, log_data: dict) -> dict:

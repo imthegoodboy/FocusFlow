@@ -167,7 +167,10 @@ def get_notifications(user_id: str, unread_only: bool = False) -> List[Dict]:
 
 def mark_notification_read(notification_id: str, user_id: str) -> bool:
     """Mark a notification as read"""
-    from bson import ObjectId
+    try:
+        from bson import ObjectId
+    except ImportError:
+        from pymongo import ObjectId
     
     result = notifications_collection.update_one(
         {"_id": ObjectId(notification_id), "user_id": user_id},
