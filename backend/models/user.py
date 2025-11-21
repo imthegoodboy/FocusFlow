@@ -20,7 +20,7 @@ class PyObjectId(ObjectId):
                 ])
             ]),
             serialization=core_schema.plain_serializer_function_ser_schema(
-                lambda x: str(x)
+                lambda x: str(x) if x else None
             ),
         )
 
@@ -33,6 +33,9 @@ class PyObjectId(ObjectId):
                 return ObjectId(v)
             raise ValueError("Invalid ObjectId")
         raise ValueError("Invalid ObjectId")
+    
+    def __str__(self):
+        return str(super())
 
 class StudentProfile(BaseModel):
     goals: List[str] = []
@@ -54,7 +57,7 @@ class SurveyResponse(BaseModel):
     energy_levels: dict = {}  # {morning: 8, afternoon: 6, evening: 7}
 
 class User(BaseModel):
-    id: Optional[PyObjectId] = None
+    id: Optional[str] = None
     email: EmailStr
     password: str
     profile: Optional[StudentProfile] = None
@@ -65,7 +68,6 @@ class User(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
-        json_encoders = {ObjectId: str}
         populate_by_name = True
 
 class UserCreate(BaseModel):

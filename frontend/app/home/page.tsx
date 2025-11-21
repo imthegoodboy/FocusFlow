@@ -2,16 +2,26 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { isAuthenticated } from '@/lib/auth';
 
 export default function HomePage() {
   const [showContent, setShowContent] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     setAuthenticated(isAuthenticated());
     setTimeout(() => setShowContent(true), 100);
   }, []);
+
+  // Redirect to dashboard if already authenticated
+  useEffect(() => {
+    if (authenticated) {
+      // Optionally auto-redirect, or let user choose
+      // router.push('/dashboard');
+    }
+  }, [authenticated, router]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-100">
