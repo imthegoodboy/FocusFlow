@@ -1,8 +1,4 @@
 """
-The production AI module is intentionally left as documentation while we focus on
-shipping the core productivity platform. When we're ready to add intelligence,
-this module will host the following pieces:
-
 1. Training Dataset
    - Inputs: anonymised routine logs (wake/sleep, study hours, screen time),
      completed task history, streaks, and notification responses.
