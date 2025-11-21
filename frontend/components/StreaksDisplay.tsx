@@ -11,7 +11,11 @@ interface Streaks {
   last_updated?: string;
 }
 
-export default function StreaksDisplay() {
+interface Props {
+  refreshKey?: string | number;
+}
+
+export default function StreaksDisplay({ refreshKey }: Props) {
   const [streaks, setStreaks] = useState<Streaks | null>(null);
 
   useEffect(() => {
@@ -23,7 +27,7 @@ export default function StreaksDisplay() {
         console.error('Failed to load streaks');
       }
     })();
-  }, []);
+  }, [refreshKey]);
 
   if (!streaks) {
     return <div className="bg-white rounded-2xl border border-slate-100 shadow-lg p-6">Loading streaks...</div>;

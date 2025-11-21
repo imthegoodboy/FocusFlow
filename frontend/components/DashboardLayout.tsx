@@ -1,13 +1,14 @@
 'use client';
 
-'use client';
-
 import { usePathname } from 'next/navigation';
 import { logout } from '@/lib/auth';
 import { StudentProfile } from '@/hooks/useStudentProfile';
 import Link from 'next/link';
 import NotificationDropdown from './NotificationDropdown';
 import ProfileDropdown from './ProfileDropdown';
+import dynamic from 'next/dynamic';
+
+const SupportChat = dynamic(() => import('./SupportChat'), { ssr: false });
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -60,6 +61,7 @@ export default function DashboardLayout({ children, profile }: DashboardLayoutPr
         </div>
       </header>
       <main className="max-w-6xl mx-auto px-4 py-8">{children}</main>
+      <SupportChat />
     </div>
   );
 }

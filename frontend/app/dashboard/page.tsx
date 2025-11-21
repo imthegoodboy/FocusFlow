@@ -63,7 +63,7 @@ function DashboardContent() {
           <FocusTimer activeTask={activeTask} />
         </div>
         <aside className="space-y-6">
-          <StreaksDisplay />
+          <StreaksDisplay refreshKey={tasks.map((task) => `${task.id}-${task.status}`).join('|')} />
         </aside>
       </div>
     </DashboardLayout>
