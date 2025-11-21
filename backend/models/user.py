@@ -6,36 +6,21 @@ try:
 except ImportError:
     from pymongo import ObjectId
 
+
 class PyObjectId(ObjectId):
     @classmethod
-    def __get_pydantic_core_schema__(cls, _source_type, _handler):
-        from pydantic_core import core_schema
-        return core_schema.json_or_python_schema(
-            json_schema=core_schema.str_schema(),
-            python_schema=core_schema.union_schema([
-                core_schema.is_instance_schema(ObjectId),
-                core_schema.chain_schema([
-                    core_schema.str_schema(),
-                    core_schema.no_info_plain_validator_function(cls.validate),
-                ])
-            ]),
-            serialization=core_schema.plain_serializer_function_ser_schema(
-                lambda x: str(x) if x else None
-            ),
-        )
+    def __get_validators__(cls):
+        yield cls.validate
 
     @classmethod
     def validate(cls, v):
-        if isinstance(v, ObjectId):
-            return v
-        if isinstance(v, str):
-            if ObjectId.is_valid(v):
-                return ObjectId(v)
-            raise ValueError("Invalid ObjectId")
-        raise ValueError("Invalid ObjectId")
-    
-    def __str__(self):
-        return str(super())
+        if not ObjectId.is_valid(v):
+            raise ValueError("Invalid objectid")
+        return ObjectId(v)
+
+    @classmethod
+    def __modify_schema__(cls, field_schema):
+        field_schema.update(type="string")
 
 class StudentProfile(BaseModel):
     goals: List[str] = []
@@ -57,7 +42,7 @@ class SurveyResponse(BaseModel):
     energy_levels: dict = {}  # {morning: 8, afternoon: 6, evening: 7}
 
 class User(BaseModel):
-    id: Optional[str] = None
+    id: Optional[PyObjectId] = None
     email: EmailStr
     password: str
     profile: Optional[StudentProfile] = None
@@ -68,7 +53,7 @@ class User(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
-        populate_by_name = True
+        json_encoders = {ObjectId: str}
 
 class UserCreate(BaseModel):
     email: EmailStr

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 export default function SplashScreen() {
   const [loading, setLoading] = useState(true);
@@ -26,13 +25,13 @@ export default function SplashScreen() {
   return (
     <div className="fixed inset-0 bg-gradient-to-br from-primary-500 via-primary-400 to-primary-600 flex items-center justify-center z-50">
       <div className="text-center">
-        {/* Lottie Animation */}
+        {/* Lottie Animation via iframe */}
         <div className="mb-8 flex justify-center">
           <div className="w-64 h-64">
-            <DotLottieReact
-              src="https://lottie.host/3ba9d658-a564-4a9d-8da4-106d033c29fe/Mxlqn0yJCm.lottie"
-              loop
-              autoplay
+            <iframe
+              src="https://lottie.host/embed/3ba9d658-a564-4a9d-8da4-106d033c29fe/Mxlqn0yJCm.lottie"
+              className="w-full h-full border-0"
+              title="Loading animation"
             />
           </div>
         </div>
@@ -47,38 +46,6 @@ export default function SplashScreen() {
           Your AI-Powered Study Companion 🐱
         </p>
       </div>
-
-      <style jsx>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(-20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes slide-up {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .animate-fade-in {
-          animation: fade-in 1s ease-out;
-        }
-
-        .animate-slide-up {
-          animation: slide-up 1s ease-out 0.3s both;
-        }
-      `}</style>
     </div>
   );
 }

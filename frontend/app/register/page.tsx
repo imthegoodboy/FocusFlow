@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { register } from '@/lib/auth';
 import toast from 'react-hot-toast';
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -44,13 +43,13 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-white px-4">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
         <div className="text-center mb-8">
-          {/* Lottie Animation */}
+          {/* Lottie Animation via iframe */}
           <div className="mb-4 flex justify-center">
             <div className="w-48 h-48">
-              <DotLottieReact
-                src="https://lottie.host/7323a841-b2f4-4dc3-be96-0803db57e5e5/kNOzEYcYFL.lottie"
-                loop
-                autoplay
+              <iframe
+                src="https://lottie.host/embed/7323a841-b2f4-4dc3-be96-0803db57e5e5/kNOzEYcYFL.lottie"
+                className="w-full h-full border-0"
+                title="Register animation"
               />
             </div>
           </div>
