@@ -10,9 +10,7 @@ Optimizes their day using automated recommendations
 Prevents schedule conflicts
 Monitors progress with analytics dashboards
 
-Recommended Stack:
-React/Next.js + Node.js/Laravel + Firebase/MySQL + Tailwind CSS
-Core Features
+ 
 Student Registration & Profile Setup
 
 Student profile with goals
