@@ -230,11 +230,11 @@ function PlanBuilder() {
       {planning && (
         <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="text-center space-y-4">
-            <div className="w-56 h-56 mx-auto">
+            <div className="w-64 h-64 mx-auto">
               <iframe
-                src="https://lottie.host/embed/3ba9d658-a564-4a9d-8da4-106d033c29fe/Mxlqn0yJCm.lottie"
+                src="https://lottie.host/embed/2b3fbb35-1c91-4076-a969-4abef6131965/q5kr5j3IqY.lottie"
                 className="w-full h-full border-0"
-                title="Planning animation"
+                title="AI planning animation"
               />
             </div>
             <p className="text-lg font-semibold text-slate-700">AI is arranging your tasks… please wait.</p>

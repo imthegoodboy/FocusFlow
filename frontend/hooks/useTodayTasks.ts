@@ -19,9 +19,9 @@ export const useTodayTasks = () => {
   const [error, setError] = useState<string | null>(null);
 
   const fetchTasks = useCallback(async () => {
-    setLoading(true);
     setError(null);
     try {
+      setLoading(true);
       const res = await api.get('/api/tasks', { params: { today: true } });
       setTasks(res.data);
     } catch (err: any) {
@@ -34,6 +34,8 @@ export const useTodayTasks = () => {
 
   useEffect(() => {
     fetchTasks();
+    const interval = setInterval(fetchTasks, 60_000);
+    return () => clearInterval(interval);
   }, [fetchTasks]);
 
   return { tasks, loading, error, refresh: fetchTasks };

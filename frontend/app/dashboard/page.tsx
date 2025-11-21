@@ -8,8 +8,7 @@ import PlanMyDayCard from '@/components/PlanMyDayCard';
 import TodayTasksList from '@/components/TodayTasksList';
 import FocusTimer from '@/components/FocusTimer';
 import { useStudentProfile } from '@/hooks/useStudentProfile';
-import { useTodayTasks } from '@/hooks/useTodayTasks';
-import { PlannedTask } from '@/hooks/useTodayTasks';
+import { useTodayTasks, PlannedTask } from '@/hooks/useTodayTasks';
 
 export default function DashboardPage() {
   return (
@@ -23,6 +22,26 @@ function DashboardContent() {
   const { profile, loading } = useStudentProfile();
   const { tasks, loading: tasksLoading, refresh } = useTodayTasks();
   const [activeTask, setActiveTask] = useState<PlannedTask | null>(null);
+  const [now, setNow] = useState(Date.now());
+
+  useEffect(() => {
+    const tick = setInterval(() => setNow(Date.now()), 30_000);
+    return () => clearInterval(tick);
+  }, []);
+
+  useEffect(() => {
+    if (!tasks.length) {
+      setActiveTask(null);
+      return;
+    }
+    const current = tasks.find((task) => {
+      if (!task.scheduled_start || !task.scheduled_end || task.status !== 'pending') return false;
+      const start = new Date(task.scheduled_start).getTime();
+      const end = new Date(task.scheduled_end).getTime();
+      return now >= start && now <= end;
+    });
+    setActiveTask(current || null);
+  }, [tasks, now]);
 
   if (loading) {
     return (
@@ -40,12 +59,7 @@ function DashboardContent() {
       <div className="grid xl:grid-cols-[2fr,1fr] gap-6">
         <div className="space-y-6">
           <PlanMyDayCard />
-          <TodayTasksList
-            tasks={tasks}
-            loading={tasksLoading}
-            onRefresh={refresh}
-            onStartTimer={(task) => setActiveTask(task)}
-          />
+          <TodayTasksList tasks={tasks} loading={tasksLoading} onRefresh={refresh} />
           <FocusTimer activeTask={activeTask} />
         </div>
         <aside className="space-y-6">
