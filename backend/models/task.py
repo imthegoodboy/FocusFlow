@@ -1,13 +1,13 @@
-from pydantic import BaseModel
-from typing import Optional, Literal
 from datetime import datetime
-try:
-    from bson import ObjectId
-except ImportError:
-    from pymongo import ObjectId
+from typing import Literal, Optional
+
+from pydantic import BaseModel, Field, ConfigDict
+
 
 class Task(BaseModel):
-    id: Optional[ObjectId] = None
+    model_config = ConfigDict(populate_by_name=True, from_attributes=True)
+
+    id: Optional[str] = Field(default=None, alias="_id")
     user_id: str
     name: str
     duration: int  # minutes
@@ -21,9 +21,6 @@ class Task(BaseModel):
     updated_at: datetime = datetime.now()
     completed_at: Optional[datetime] = None
 
-    class Config:
-        arbitrary_types_allowed = True
-        json_encoders = {ObjectId: str}
 
 class TaskCreate(BaseModel):
     name: str
@@ -31,6 +28,7 @@ class TaskCreate(BaseModel):
     deadline: datetime
     priority: Literal["low", "medium", "high"]
     category: Literal["Study", "Health", "Personal", "Work", "Other"]
+
 
 class TaskUpdate(BaseModel):
     name: Optional[str] = None
@@ -40,7 +38,10 @@ class TaskUpdate(BaseModel):
     category: Optional[Literal["Study", "Health", "Personal", "Work", "Other"]] = None
     status: Optional[Literal["pending", "in_progress", "completed", "cancelled"]] = None
 
+
 class TaskResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: str
     user_id: str
     name: str
@@ -54,7 +55,4 @@ class TaskResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     completed_at: Optional[datetime] = None
-
-    class Config:
-        json_encoders = {ObjectId: str}
 
