@@ -148,7 +148,7 @@ def get_sleep_performance_correlation(user_id: str) -> List[Dict]:
     
     logs = list(routine_logs_collection.find({
         "user_id": user_id,
-        "date": {"$gte": thirty_days_ago},
+        "date": {"$gte": thirty_days_ago.isoformat()},
         "wakeup_time": {"$exists": True},
         "sleep_time": {"$exists": True},
         "productivity_score": {"$exists": True}
@@ -198,7 +198,7 @@ def get_monthly_progress(user_id: str) -> Dict:
     
     logs = list(routine_logs_collection.find({
         "user_id": user_id,
-        "date": {"$gte": month_start}
+        "date": {"$gte": month_start.isoformat()}
     }))
     
     tasks = list(tasks_collection.find({

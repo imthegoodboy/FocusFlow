@@ -13,7 +13,7 @@ class SurveyAnswers(BaseModel):
     screen_time: Optional[float] = None
     exercise_duration: Optional[float] = None
     preferred_break_length: Optional[int] = None
-    class_schedule: List[dict] = []
+    class_schedule: List[dict] = Field(default_factory=list)
 
 
 class StudentProfile(BaseModel):

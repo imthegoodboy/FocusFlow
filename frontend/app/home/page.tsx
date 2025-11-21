@@ -19,9 +19,9 @@ const benefitCards = [
     icon: "📈",
   },
   {
-    title: "AI Guidance Students Trust",
+    title: "Guided Coaching",
     copy:
-      "Pattern analysis highlights when you learn fastest, when to rest, and how sleep impacts exam performance. Recommendations adapt to your habits—not the other way round.",
+      "Insights highlight when you learn fastest, when to pause, and how sleep impacts exam performance. Recommendations adapt to your habits—not the other way round.",
     icon: "✨",
   },
 ];

@@ -10,7 +10,7 @@ class Task(BaseModel):
     id: Optional[str] = Field(default=None, alias="_id")
     user_id: str
     name: str
-    duration: int  # minutes
+    duration: int   
     deadline: datetime
     priority: Literal["low", "medium", "high"]
     category: Literal["Study", "Health", "Personal", "Work", "Other"]
