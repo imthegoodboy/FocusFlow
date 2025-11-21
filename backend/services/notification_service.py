@@ -1,7 +1,12 @@
 from datetime import datetime, timedelta
-from typing import List, Dict
-from database import notifications_collection, tasks_collection, routine_logs_collection
-from services.ai_recommendation import get_productive_hours
+from typing import Dict, List
+
+from database import (
+    notifications_collection,
+    tasks_collection,
+    routine_logs_collection,
+    students_collection,
+)
 
 def create_notification(user_id: str, title: str, message: str, type: str = "info") -> dict:
     """Create a new notification"""
@@ -64,6 +69,29 @@ def check_and_create_notifications(user_id: str):
     
     return notifications
 
+def _derive_focus_windows(user_id: str) -> List[Dict[str, int]]:
+    student = students_collection.find_one({"user_id": user_id})
+    survey = student.get("survey") if student else None
+    windows = []
+    if survey:
+        wake = survey.get("wakeup_time")
+        sleep = survey.get("sleep_time")
+        if wake and sleep:
+            try:
+                wake_hour = int(wake.split(":")[0])
+                sleep_hour = int(sleep.split(":")[0])
+                windows.append({"start_hour": wake_hour + 1, "end_hour": min(wake_hour + 4, 23)})
+                windows.append({"start_hour": max(sleep_hour - 4, 0), "end_hour": sleep_hour - 1})
+            except ValueError:
+                pass
+    if not windows:
+        windows = [
+            {"start_hour": 9, "end_hour": 12},
+            {"start_hour": 18, "end_hour": 21},
+        ]
+    return windows
+
+
 def check_free_time_slots(user_id: str) -> Dict:
     """Check for free time slots and recommend study time"""
     now = datetime.now()
@@ -82,31 +110,27 @@ def check_free_time_slots(user_id: str) -> Dict:
         }
     }))
     
-    # Find gaps
-    productive_hours = get_productive_hours(user_id)
-    if productive_hours:
-        best_hour = productive_hours[0]["start_hour"]
-        current_hour = now.hour
-        
-        # Check if current hour is in productive range and no task scheduled
-        if best_hour <= current_hour < best_hour + 2:
-            # Check if there's a free slot
-            has_conflict = False
+    focus_windows = _derive_focus_windows(user_id)
+    current_hour = now.hour
+
+    for window in focus_windows:
+        start_hour = window["start_hour"]
+        end_hour = window["end_hour"]
+        if start_hour <= current_hour < end_hour:
+            busy = False
             for task in scheduled_tasks:
                 task_start = task.get("scheduled_start")
                 if isinstance(task_start, str):
                     task_start = datetime.fromisoformat(task_start)
-                
                 if task_start.hour == current_hour:
-                    has_conflict = True
+                    busy = True
                     break
-            
-            if not has_conflict:
+            if not busy:
                 return create_notification(
                     user_id,
                     "Free Study Time Available",
-                    f"A free 1-hour slot available now — recommended study time.",
-                    "info"
+                    "You have open time right now that matches your focus schedule.",
+                    "info",
                 )
     
     return None
@@ -115,12 +139,16 @@ def check_sleep_patterns(user_id: str) -> Dict:
     """Check sleep patterns and create notification if needed"""
     seven_days_ago = datetime.now() - timedelta(days=7)
     
-    logs = list(routine_logs_collection.find({
-        "user_id": user_id,
-        "created_at": {"$gte": seven_days_ago},
-        "wakeup_time": {"$exists": True},
-        "sleep_time": {"$exists": True}
-    }))
+    logs = list(
+        routine_logs_collection.find(
+            {
+                "user_id": user_id,
+                "created_at": {"$gte": seven_days_ago},
+                "wakeup_time": {"$exists": True},
+                "sleep_time": {"$exists": True},
+            }
+        )
+    )
     
     if len(logs) < 3:
         return None

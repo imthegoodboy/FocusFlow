@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
-from typing import List, Optional, Dict
-from database import tasks_collection, routine_logs_collection
-from services.ai_recommendation import get_productive_hours
+from typing import Dict, List, Optional
+
+from database import tasks_collection, students_collection
 
 def check_conflicts(start: datetime, end: datetime, existing_tasks: List[dict]) -> bool:
     """Check if a time slot conflicts with existing tasks"""
@@ -23,6 +23,29 @@ def check_conflicts(start: datetime, end: datetime, existing_tasks: List[dict]) 
     
     return False
 
+def _derive_focus_windows(user_id: str) -> List[Dict[str, int]]:
+    student = students_collection.find_one({"user_id": user_id})
+    survey = student.get("survey") if student else None
+    windows = []
+    if survey:
+        wake = survey.get("wakeup_time")
+        sleep = survey.get("sleep_time")
+        if wake and sleep:
+            try:
+                wake_hour = int(wake.split(":")[0])
+                sleep_hour = int(sleep.split(":")[0])
+                windows.append({"start_hour": wake_hour + 1, "end_hour": min(wake_hour + 4, 23)})
+                windows.append({"start_hour": max(sleep_hour - 4, 0), "end_hour": sleep_hour - 1})
+            except ValueError:
+                pass
+    if not windows:
+        windows = [
+            {"start_hour": 9, "end_hour": 12},
+            {"start_hour": 18, "end_hour": 21},
+        ]
+    return windows
+
+
 def schedule_task(user_id: str, task_dict: dict) -> Optional[Dict[str, datetime]]:
     """Auto-schedule a task in the best available slot"""
     duration = task_dict.get("duration", 60)  # minutes
@@ -35,8 +58,7 @@ def schedule_task(user_id: str, task_dict: dict) -> Optional[Dict[str, datetime]
     if isinstance(deadline, str):
         deadline = datetime.fromisoformat(deadline.replace("Z", "+00:00"))
     
-    # Get productive hours recommendation
-    productive_hours = get_productive_hours(user_id)
+    focus_windows = _derive_focus_windows(user_id)
     
     # Get existing scheduled tasks
     existing_tasks = list(tasks_collection.find({
@@ -50,8 +72,8 @@ def schedule_task(user_id: str, task_dict: dict) -> Optional[Dict[str, datetime]
     if deadline < now:
         return None
     
-    # Try productive hours first
-    for hour_range in productive_hours:
+    # Try focus windows first
+    for hour_range in focus_windows:
         start_hour = hour_range.get("start_hour", 9)
         end_hour = hour_range.get("end_hour", 17)
         
