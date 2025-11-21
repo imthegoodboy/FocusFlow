@@ -11,4 +11,5 @@ routine_logs_collection = db["routine_logs"]
 analytics_collection = db["analytics"]
 notifications_collection = db["notifications"]
 streaks_collection = db["streaks"]
+students_collection = db["students"]
 

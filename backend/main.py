@@ -1,10 +1,16 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import auth, user, tasks, routine, ai, analytics, notifications, streaks
+from fastapi.staticfiles import StaticFiles
+
+from routers import auth, user, tasks, routine, analytics, notifications, streaks, student
+
+os.makedirs(os.path.join("uploads", "avatars"), exist_ok=True)
 
 app = FastAPI(
     title="FocusFlow API",
-    description="AI-Based Student Productivity & Routine Optimizer",
+    description="Student Productivity & Routine Optimizer",
     version="1.0.0"
 )
 
@@ -22,10 +28,12 @@ app.include_router(auth.router)
 app.include_router(user.router)
 app.include_router(tasks.router)
 app.include_router(routine.router)
-app.include_router(ai.router)
 app.include_router(analytics.router)
 app.include_router(notifications.router)
 app.include_router(streaks.router)
+app.include_router(student.router)
+
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 @app.get("/")
 async def root():
