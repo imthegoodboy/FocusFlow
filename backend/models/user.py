@@ -87,5 +87,5 @@ class UserResponse(BaseModel):
     is_active: bool
 
     class Config:
-        json_encoders = {ObjectId: str}
+        pass
 
