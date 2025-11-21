@@ -9,8 +9,9 @@ except ImportError:
 from fastapi import HTTPException
 
 from database import students_collection, tasks_collection
-from models.task import PlanDayRequest, PlanTaskItem, TaskCreate, TaskUpdate
+from models.task import PlanDayRequest, PlanTaskItem, PlannedTaskInput, TaskCreate, TaskUpdate
 from services.scheduler import check_conflicts, schedule_task
+from services.streak_service import update_streaks
 
 def _ensure_naive(dt: datetime) -> datetime:
     if dt.tzinfo:
@@ -132,12 +133,50 @@ def _log_task_history(user_id: str, task_id: str, status: str) -> None:
     )
 
 
-def plan_day_tasks(user_id: str, payload: PlanDayRequest) -> List[dict]:
+def preview_day_plan(user_id: str, payload: PlanDayRequest) -> List[dict]:
     if not payload.tasks:
         raise HTTPException(status_code=400, detail="Please provide at least one task.")
-    if len(payload.tasks) > 5:
-        raise HTTPException(status_code=400, detail="You can only plan up to 5 tasks.")
+    if len(payload.tasks) > 6:
+        raise HTTPException(status_code=400, detail="You can only plan up to 6 tasks.")
 
+    return _build_plan(user_id, payload.tasks)
+
+
+def save_day_plan(user_id: str, plan: List[PlannedTaskInput]) -> List[dict]:
+    if not plan:
+        raise HTTPException(status_code=400, detail="Plan is empty.")
+
+    saved = []
+    now = datetime.utcnow()
+    for idx, item in enumerate(plan, start=1):
+        start = _ensure_naive(item.scheduled_start)
+        end = _ensure_naive(item.scheduled_end)
+        doc = {
+            "user_id": user_id,
+            "name": item.name,
+            "duration": item.duration,
+            "deadline": end,
+            "priority": item.priority,
+            "category": "Study",
+            "status": "pending",
+            "scheduled_start": start,
+            "scheduled_end": end,
+            "plan_reason": item.plan_reason,
+            "sequence": item.sequence or idx,
+            "is_today_plan": True,
+            "created_at": now,
+            "updated_at": now,
+        }
+        result = tasks_collection.insert_one(doc)
+        doc["id"] = str(result.inserted_id)
+        doc["_id"] = str(result.inserted_id)
+        saved.append(doc)
+
+    update_streaks(user_id)
+    return saved
+
+
+def _build_plan(user_id: str, tasks: List[PlanTaskItem]) -> List[dict]:
     student = students_collection.find_one({"user_id": user_id})
     if not student:
         raise HTTPException(status_code=400, detail="Complete your onboarding before planning.")
@@ -154,9 +193,9 @@ def plan_day_tasks(user_id: str, payload: PlanDayRequest) -> List[dict]:
         day_end = datetime.combine(today, time(23, 0))
 
     blocked = _build_blocks(today, class_schedule)
-    planned = []
+    planned: List[dict] = []
     priority_order = {"high": 3, "medium": 2, "low": 1}
-    tasks_sorted = sorted(payload.tasks, key=lambda t: -priority_order.get(t.priority, 1))
+    tasks_sorted = sorted(tasks, key=lambda t: -priority_order.get(t.priority, 1))
     sequence = 1
 
     for item in tasks_sorted:
@@ -168,26 +207,17 @@ def plan_day_tasks(user_id: str, payload: PlanDayRequest) -> List[dict]:
         slot_end = slot_start + duration
         reason = _build_reason(item, slot_start, class_schedule)
 
-        doc = {
-            "user_id": user_id,
-            "name": item.name,
-            "duration": item.duration,
-            "deadline": slot_end,
-            "priority": item.priority,
-            "category": "Study",
-            "status": "pending",
-            "scheduled_start": slot_start,
-            "scheduled_end": slot_end,
-            "plan_reason": reason,
-            "sequence": sequence,
-            "is_today_plan": True,
-            "created_at": datetime.utcnow(),
-            "updated_at": datetime.utcnow(),
-        }
-        result = tasks_collection.insert_one(doc)
-        doc["id"] = str(result.inserted_id)
-        doc["_id"] = str(result.inserted_id)
-        planned.append(doc)
+        planned.append(
+            {
+                "name": item.name,
+                "duration": item.duration,
+                "priority": item.priority,
+                "scheduled_start": slot_start,
+                "scheduled_end": slot_end,
+                "plan_reason": reason,
+                "sequence": sequence,
+            }
+        )
 
         blocked.append((slot_start, slot_end))
         blocked.sort(key=lambda b: b[0])

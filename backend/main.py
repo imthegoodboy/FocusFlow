@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from routers import auth, tasks, routine, analytics, notifications, streaks, student
+from routers import auth, tasks, routine, analytics, notifications, streaks, student, support
 
 os.makedirs(os.path.join("uploads", "avatars"), exist_ok=True)
 
@@ -31,6 +31,7 @@ app.include_router(analytics.router)
 app.include_router(notifications.router)
 app.include_router(streaks.router)
 app.include_router(student.router)
+app.include_router(support.router)
 
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 

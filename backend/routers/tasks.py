@@ -1,6 +1,11 @@
 from fastapi import APIRouter, HTTPException, Depends, Query
 from typing import Optional
-from models.task import TaskCreate, TaskUpdate, PlanDayRequest
+from models.task import (
+    TaskCreate,
+    TaskUpdate,
+    PlanDayRequest,
+    PlannedTaskInput,
+)
 from services.task_service import (
     create_task,
     get_tasks,
@@ -8,11 +13,13 @@ from services.task_service import (
     update_task,
     delete_task,
     check_task_conflicts,
-    plan_day_tasks,
+    preview_day_plan,
+    save_day_plan,
 )
 from services.scheduler import auto_reschedule_delayed_tasks
 from auth import get_current_user_id
 from datetime import datetime
+from typing import List
 
 router = APIRouter(prefix="/api/tasks", tags=["tasks"])
 
@@ -83,11 +90,17 @@ async def reschedule_delayed(user_id: str = Depends(get_current_user_id)):
     return {"message": "Delayed tasks rescheduled"}
 
 
+@router.post("/plan-preview", response_model=dict)
+async def preview_plan(payload: PlanDayRequest, user_id: str = Depends(get_current_user_id)):
+    plan = preview_day_plan(user_id, payload)
+    return {"plan": plan}
+
+
 @router.post("/plan-day", response_model=dict)
-async def plan_my_day(
-    payload: PlanDayRequest,
+async def confirm_plan(
+    plan: List[PlannedTaskInput],
     user_id: str = Depends(get_current_user_id),
 ):
-    plan = plan_day_tasks(user_id, payload)
-    return {"plan": plan}
+    saved = save_day_plan(user_id, plan)
+    return {"plan": saved}
 

@@ -219,8 +219,8 @@ export default function HomePage() {
             tanked my math score. The AI suggestions are simple, actionable and eerily accurate.”
           </p>
           <div>
-            <p className="font-semibold text-white">Aayushi Sharma</p>
-            <p className="text-sm opacity-80">Computer Science Undergraduate</p>
+            <p className="font-semibold text-white">Aniket Yadav </p>
+            <p className="text-sm opacity-80">AIML undergraduate</p>
           </div>
         </div>
       </section>
