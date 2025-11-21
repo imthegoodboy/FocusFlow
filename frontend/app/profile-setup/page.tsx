@@ -1,11 +1,14 @@
-'use client';
+import { redirect } from 'next/navigation';
 
+export default function LegacyProfileSetupPage() {
+  redirect('/onboarding');
+}
+'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
-
 export default function ProfileSetupPage() {
   return (
     <ProtectedRoute>
@@ -13,7 +16,6 @@ export default function ProfileSetupPage() {
     </ProtectedRoute>
   );
 }
-
 function ProfileSetupContent() {
   const router = useRouter();
   const [step, setStep] = useState(1);
@@ -336,4 +338,3 @@ function ProfileSetupContent() {
     </div>
   );
 }
-

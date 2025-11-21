@@ -7,7 +7,6 @@ try:
     from bson import ObjectId
 except ImportError:
     from pymongo import ObjectId
-
 router = APIRouter(prefix="/api/user", tags=["user"])
 
 @router.put("/profile")

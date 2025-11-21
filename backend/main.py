@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from routers import auth, user, tasks, routine, analytics, notifications, streaks, student
+from routers import auth, tasks, routine, analytics, notifications, streaks, student
 
 os.makedirs(os.path.join("uploads", "avatars"), exist_ok=True)
 
@@ -25,7 +25,6 @@ app.add_middleware(
 
 # Include routers
 app.include_router(auth.router)
-app.include_router(user.router)
 app.include_router(tasks.router)
 app.include_router(routine.router)
 app.include_router(analytics.router)
