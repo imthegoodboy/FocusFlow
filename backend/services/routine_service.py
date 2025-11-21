@@ -10,9 +10,16 @@ def create_routine_log(user_id: str, log_data: dict) -> dict:
     """Create a new routine log entry"""
     log_dict = log_data.copy()
     log_dict["user_id"] = user_id
-    log_dict["created_at"] = datetime.now()
-    log_dict["updated_at"] = datetime.now()
-    
+    entry_date = log_dict.get("date")
+    if isinstance(entry_date, date):
+        log_dict["date"] = entry_date.isoformat()
+    elif isinstance(entry_date, str):
+        log_dict["date"] = entry_date
+    else:
+        log_dict["date"] = date.today().isoformat()
+    log_dict["created_at"] = datetime.utcnow()
+    log_dict["updated_at"] = datetime.utcnow()
+
     result = routine_logs_collection.insert_one(log_dict)
     log_dict["_id"] = result.inserted_id
     log_dict["id"] = str(result.inserted_id)
@@ -25,9 +32,9 @@ def get_routine_logs(user_id: str, start_date: Optional[date] = None, end_date: 
     if start_date or end_date:
         date_query = {}
         if start_date:
-            date_query["$gte"] = start_date
+            date_query["$gte"] = start_date.isoformat()
         if end_date:
-            date_query["$lte"] = end_date
+            date_query["$lte"] = end_date.isoformat()
         query["date"] = date_query
     
     logs = list(routine_logs_collection.find(query).sort("date", -1))
@@ -62,7 +69,7 @@ def update_routine_log(log_id: str, user_id: str, log_data: dict) -> Optional[di
 
 def get_today_log(user_id: str) -> Optional[dict]:
     """Get today's routine log"""
-    today = date.today()
+    today = date.today().isoformat()
     log = routine_logs_collection.find_one({"user_id": user_id, "date": today})
     if log:
         log["id"] = str(log["_id"])
@@ -79,16 +86,16 @@ def detect_missing_entries(user_id: str, days: int = 7) -> List[date]:
     existing_dates = set()
     logs = routine_logs_collection.find({
         "user_id": user_id,
-        "date": {"$gte": start_date, "$lte": today}
+        "date": {"$gte": start_date.isoformat(), "$lte": today.isoformat()}
     })
     
     for log in logs:
-        existing_dates.add(log["date"])
+        existing_dates.add(log.get("date"))
     
     missing_dates = []
     current = start_date
     while current <= today:
-        if current not in existing_dates:
+        if current.isoformat() not in existing_dates:
             missing_dates.append(current)
         current += timedelta(days=1)
     
