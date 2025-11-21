@@ -1,5 +1,5 @@
 from .user import User, UserCreate, UserLogin, UserResponse
-from .task import Task, TaskCreate, TaskUpdate, TaskResponse
+from .task import Task, TaskCreate, TaskUpdate, PlanDayRequest, PlanTaskItem
 from .routine import RoutineLog, RoutineLogCreate, RoutineLogResponse
 from .student import StudentProfile, StudentProfileCreate, StudentProfileResponse, SurveyAnswers
 
@@ -15,7 +15,8 @@ __all__ = [
     "Task",
     "TaskCreate",
     "TaskUpdate",
-    "TaskResponse",
+    "PlanDayRequest",
+    "PlanTaskItem",
     "RoutineLog",
     "RoutineLogCreate",
     "RoutineLogResponse",

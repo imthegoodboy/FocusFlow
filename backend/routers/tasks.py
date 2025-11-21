@@ -1,8 +1,14 @@
 from fastapi import APIRouter, HTTPException, Depends, Query
 from typing import Optional
-from models.task import TaskCreate, TaskUpdate, TaskResponse
+from models.task import TaskCreate, TaskUpdate, PlanDayRequest
 from services.task_service import (
-    create_task, get_tasks, get_task, update_task, delete_task, check_task_conflicts
+    create_task,
+    get_tasks,
+    get_task,
+    update_task,
+    delete_task,
+    check_task_conflicts,
+    plan_day_tasks,
 )
 from services.scheduler import auto_reschedule_delayed_tasks
 from auth import get_current_user_id
@@ -23,10 +29,11 @@ async def create_new_task(task_data: TaskCreate, user_id: str = Depends(get_curr
 @router.get("", response_model=list)
 async def get_user_tasks(
     status: Optional[str] = Query(None),
-    user_id: str = Depends(get_current_user_id)
+    today: bool = Query(False),
+    user_id: str = Depends(get_current_user_id),
 ):
     """Get all tasks for the current user"""
-    tasks = get_tasks(user_id, status)
+    tasks = get_tasks(user_id, status=status, today=today)
     return tasks
 
 @router.get("/{task_id}", response_model=dict)
@@ -73,4 +80,13 @@ async def reschedule_delayed(user_id: str = Depends(get_current_user_id)):
     """Auto-reschedule delayed tasks"""
     auto_reschedule_delayed_tasks(user_id)
     return {"message": "Delayed tasks rescheduled"}
+
+
+@router.post("/plan-day", response_model=dict)
+async def plan_my_day(
+    payload: PlanDayRequest,
+    user_id: str = Depends(get_current_user_id),
+):
+    plan = plan_day_tasks(user_id, payload)
+    return {"plan": plan}
 
