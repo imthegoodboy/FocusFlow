@@ -29,6 +29,9 @@ export const register = async (email: string, password: string) => {
     email,
     password,
   });
+  if (response.data.access_token) {
+    Cookies.set('token', response.data.access_token, { expires: 7 });
+  }
   return response.data;
 };
 
