@@ -15,7 +15,7 @@ interface TodayTasksListProps {
 export default function TodayTasksList({ tasks, loading, onRefresh, onStartTimer }: TodayTasksListProps) {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
-  const handleStatus = async (taskId: string, status: 'completed' | 'cancelled') {
+  const handleStatus = async (taskId: string, status: 'completed' | 'cancelled') => {
     setUpdatingId(taskId);
     try {
       await api.put(`/api/tasks/${taskId}`, { status });
@@ -26,7 +26,7 @@ export default function TodayTasksList({ tasks, loading, onRefresh, onStartTimer
     } finally {
       setUpdatingId(null);
     }
-  }
+  };
 
   const handleEditSlot = async (task: PlannedTask) => {
     if (!task.scheduled_start) {
