@@ -5,11 +5,14 @@ from database import routine_logs_collection, tasks_collection, streaks_collecti
 def get_daily_productivity(user_id: str, days: int = 7) -> List[Dict]:
     """Get daily productivity scores for the last N days"""
     start_date = date.today() - timedelta(days=days)
-    
-    logs = list(routine_logs_collection.find({
-        "user_id": user_id,
-        "date": {"$gte": start_date}
-    }).sort("date", 1))
+    logs = list(
+        routine_logs_collection.find(
+            {
+                "user_id": user_id,
+                "date": {"$gte": start_date.isoformat()},
+            }
+        ).sort("date", 1)
+    )
     
     productivity_data = []
     for log in logs:
@@ -25,11 +28,14 @@ def get_daily_productivity(user_id: str, days: int = 7) -> List[Dict]:
 def get_weekly_productivity(user_id: str, weeks: int = 4) -> List[Dict]:
     """Get weekly productivity averages"""
     start_date = date.today() - timedelta(weeks=weeks)
-    
-    logs = list(routine_logs_collection.find({
-        "user_id": user_id,
-        "date": {"$gte": start_date}
-    }))
+    logs = list(
+        routine_logs_collection.find(
+            {
+                "user_id": user_id,
+                "date": {"$gte": start_date.isoformat()},
+            }
+        )
+    )
     
     # Group by week
     weekly_data = {}
