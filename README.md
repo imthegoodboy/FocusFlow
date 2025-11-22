@@ -5,7 +5,7 @@ A full-stack application that helps students track their daily routines, manage 
 ## Tech Stack
 
 - **Backend**: FastAPI (Python)
-- **Frontend**: Next.js 14 (React, TypeScript)
+- **Frontend**: Next.js 14 (React,  )
 - **Database**: MongoDB
 - **Styling**: Tailwind CSS
 
