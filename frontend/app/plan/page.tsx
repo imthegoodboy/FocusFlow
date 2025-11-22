@@ -215,7 +215,7 @@ function PlanBuilder() {
           {tasks.map((task, index) => (
             <div
               key={index}
-              className="grid md:grid-cols-[2fr,1fr,1fr,auto] gap-4 items-end border border-slate-100 rounded-2xl p-4"
+              className="grid grid-cols-1 md:grid-cols-[2fr,1fr,1fr,auto] gap-4 items-end border-2 border-slate-200 rounded-2xl p-5 bg-slate-50 hover:bg-white transition"
             >
               <div>
                 <label className="text-xs font-semibold text-slate-500">Task name</label>
