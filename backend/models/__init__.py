@@ -1,25 +1,23 @@
-from .user import User, UserCreate, UserLogin, UserResponse
-from .task import Task, TaskCreate, TaskUpdate, PlanDayRequest, PlanTaskItem, PlannedTaskInput
-from .routine import RoutineLog, RoutineLogCreate, RoutineLogResponse
-from .student import StudentProfile, StudentProfileCreate, StudentProfileResponse, SurveyAnswers
+# ML Models Module
+"""
+This module contains ML model training and inference code for FocusFlow.
+
+Models:
+1. Study Time Prediction - Predicts best study hours
+2. Productivity Prediction - Predicts productivity scores  
+3. Task Scheduling - Predicts optimal task scheduling times
+
+To train models, run: python models/train_models.py
+"""
+
+from .ml_models import (
+    predict_best_study_hour,
+    predict_productivity_score,
+    predict_optimal_schedule_time
+)
 
 __all__ = [
-    "User",
-    "UserCreate",
-    "UserLogin",
-    "UserResponse",
-    "StudentProfile",
-    "StudentProfileCreate",
-    "StudentProfileResponse",
-    "SurveyAnswers",
-    "Task",
-    "TaskCreate",
-    "TaskUpdate",
-    "PlanDayRequest",
-    "PlanTaskItem",
-    "PlannedTaskInput",
-    "RoutineLog",
-    "RoutineLogCreate",
-    "RoutineLogResponse",
+    'predict_best_study_hour',
+    'predict_productivity_score',
+    'predict_optimal_schedule_time'
 ]
-
