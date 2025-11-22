@@ -371,16 +371,26 @@ function PlanBuilder() {
       )}
 
       {planning && (
-        <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="text-center space-y-4">
-            <div className="w-64 h-64 mx-auto">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-3xl shadow-2xl p-8 text-center space-y-6 max-w-md mx-4">
+            <div className="w-48 h-48 mx-auto">
               <iframe
                 src="https://lottie.host/embed/2b3fbb35-1c91-4076-a969-4abef6131965/q5kr5j3IqY.lottie"
                 className="w-full h-full border-0"
                 title="AI planning animation"
               />
             </div>
-            <p className="text-lg font-semibold text-slate-700">AI is arranging your tasks… please wait.</p>
+            <div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-2">AI is thinking...</h3>
+              <p className="text-slate-600">
+                Analyzing your tasks, schedule, and preferences to create the perfect plan for you.
+              </p>
+            </div>
+            <div className="flex gap-2 justify-center">
+              <div className="w-2 h-2 bg-primary-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+              <div className="w-2 h-2 bg-primary-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+              <div className="w-2 h-2 bg-primary-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+            </div>
           </div>
         </div>
       )}

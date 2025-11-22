@@ -37,8 +37,20 @@ export default function FocusTimer({ activeTask }: FocusTimerProps) {
   const progress = totalSeconds ? Math.max(0, (secondsLeft / totalSeconds) * 100) : 0;
   const minutes = Math.floor(secondsLeft / 60);
   const seconds = secondsLeft % 60;
-  const color =
-    progress > 60 ? 'stroke-green-500' : progress > 30 ? 'stroke-amber-500' : 'stroke-rose-500';
+  
+  // Enhanced color coding: Green (>60%), Yellow (30-60%), Red (<30%)
+  let color = 'stroke-green-500';
+  let bgColor = 'bg-green-50';
+  let textColor = 'text-green-700';
+  if (progress <= 30) {
+    color = 'stroke-red-500';
+    bgColor = 'bg-red-50';
+    textColor = 'text-red-700';
+  } else if (progress <= 60) {
+    color = 'stroke-yellow-500';
+    bgColor = 'bg-yellow-50';
+    textColor = 'text-yellow-700';
+  }
 
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-lg p-6 flex items-center gap-6">
