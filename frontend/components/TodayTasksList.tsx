@@ -223,70 +223,7 @@ export default function TodayTasksList({ tasks, loading, onRefresh, currentTime 
           )}
         </div>
       )}
-          const isActive =
-            task.scheduled_start &&
-            task.scheduled_end &&
-            task.status === 'pending' &&
-            currentTime >= new Date(task.scheduled_start).getTime() &&
-            currentTime <= new Date(task.scheduled_end).getTime();
-          const upcoming =
-            task.scheduled_start &&
-            task.status === 'pending' &&
-            currentTime < new Date(task.scheduled_start).getTime();
-          return (
-            <div
-              key={task.id}
-              className={`bg-slate-50 border-2 ${
-                isActive ? 'border-primary-400 bg-primary-50 shadow-lg' : 'border-slate-200'
-              } rounded-2xl px-5 py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition hover:shadow-md`}
-            >
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className={`text-xs font-bold uppercase tracking-wide px-2 py-1 rounded-full ${
-                    isActive ? 'bg-primary-500 text-white' : 
-                    upcoming ? 'bg-yellow-500 text-white' : 
-                    'bg-slate-200 text-slate-700'
-                  }`}>
-                    {isActive ? '🔥 Now' : upcoming ? '⏰ Upcoming' : '📅 Scheduled'}
-                  </span>
-                  <span className="text-xs font-semibold text-slate-600">
-                    {task.scheduled_start
-                      ? new Date(task.scheduled_start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                      : '—'}
-                    {' – '}
-                    {task.scheduled_end
-                      ? new Date(task.scheduled_end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                      : '—'}
-                  </span>
-                </div>
-                <p className="text-xl font-bold text-slate-900 mb-1">{task.name}</p>
-                {task.plan_reason && (
-                  <p className="text-sm text-slate-600 bg-white/60 rounded-lg px-3 py-2 mt-2">
-                    💡 {task.plan_reason}
-                  </p>
-                )}
-              </div>
-              <div className="flex items-center gap-3 w-full md:w-auto justify-end">
-                <button
-                  disabled={updatingId === task.id}
-                  onClick={() => handleStatus(task.id, 'completed')}
-                  className="px-6 py-3 rounded-xl bg-green-500 text-white font-bold hover:bg-green-600 transition shadow-lg disabled:opacity-50 text-base flex items-center gap-2 flex-1 md:flex-initial justify-center"
-                  title="Mark complete"
-                >
-                  <span>✅</span>
-                  <span>Yes</span>
-                </button>
-                <button
-                  disabled={updatingId === task.id}
-                  onClick={() => handleStatus(task.id, 'cancelled')}
-                  className="px-6 py-3 rounded-xl bg-red-500 text-white font-bold hover:bg-red-600 transition shadow-lg disabled:opacity-50 text-base flex items-center gap-2 flex-1 md:flex-initial justify-center"
-                  title="Skip task"
-                >
-                  <span>❌</span>
-                  <span>No</span>
-                </button>
-              </div>
-            </div>
+
       {/* Celebration Modals */}
       {celebration === 'single' && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn">
