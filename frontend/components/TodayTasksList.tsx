@@ -76,12 +76,16 @@ export default function TodayTasksList({ tasks, loading, onRefresh, currentTime 
                 isActive ? 'border-primary-400 bg-primary-50 shadow-lg' : 'border-slate-200'
               } rounded-2xl px-5 py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition hover:shadow-md`}
             >
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-semibold uppercase tracking-wide text-primary-500">
-                    {isActive ? 'Now' : upcoming ? 'Upcoming' : 'Scheduled'}
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className={`text-xs font-bold uppercase tracking-wide px-2 py-1 rounded-full ${
+                    isActive ? 'bg-primary-500 text-white' : 
+                    upcoming ? 'bg-yellow-500 text-white' : 
+                    'bg-slate-200 text-slate-700'
+                  }`}>
+                    {isActive ? '🔥 Now' : upcoming ? '⏰ Upcoming' : '📅 Scheduled'}
                   </span>
-                  <span className="text-xs text-slate-500">
+                  <span className="text-xs font-semibold text-slate-600">
                     {task.scheduled_start
                       ? new Date(task.scheduled_start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                       : '—'}
@@ -91,8 +95,12 @@ export default function TodayTasksList({ tasks, loading, onRefresh, currentTime 
                       : '—'}
                   </span>
                 </div>
-                <p className="text-lg font-semibold text-slate-900">{task.name}</p>
-                {task.plan_reason && <p className="text-sm text-slate-500">{task.plan_reason}</p>}
+                <p className="text-xl font-bold text-slate-900 mb-1">{task.name}</p>
+                {task.plan_reason && (
+                  <p className="text-sm text-slate-600 bg-white/60 rounded-lg px-3 py-2 mt-2">
+                    💡 {task.plan_reason}
+                  </p>
+                )}
               </div>
               <div className="flex items-center gap-3">
                 <button
