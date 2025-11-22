@@ -15,10 +15,21 @@ interface TodayTasksListProps {
 export default function TodayTasksList({ tasks, loading, onRefresh, currentTime }: TodayTasksListProps) {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [celebration, setCelebration] = useState<'single' | 'all' | null>(null);
+  const [completedTaskId, setCompletedTaskId] = useState<string | null>(null);
+  const [productivityScore, setProductivityScore] = useState<number | null>(null);
 
+  // Calculate productivity score
   useEffect(() => {
-    if (tasks.length > 0 && tasks.every((task) => task.status === 'completed')) {
-      setCelebration('all');
+    if (tasks.length > 0) {
+      const completed = tasks.filter(t => t.status === 'completed').length;
+      const total = tasks.length;
+      const score = total > 0 ? Math.round((completed / total) * 10) : 0;
+      setProductivityScore(score);
+      
+      // Show 10/10 celebration when all completed
+      if (total > 0 && completed === total) {
+        setTimeout(() => setCelebration('all'), 500);
+      }
     }
   }, [tasks]);
 
@@ -26,17 +37,36 @@ export default function TodayTasksList({ tasks, loading, onRefresh, currentTime 
     setUpdatingId(taskId);
     try {
       await api.put(`/api/tasks/${taskId}`, { status });
-      toast.success(status === 'completed' ? 'Nice work!' : 'Task skipped.');
+      
       if (status === 'completed') {
-        setCelebration('single');
+        setCompletedTaskId(taskId);
+        toast.success('🎉 Great job! Task completed!', {
+          duration: 3000,
+          icon: '✅',
+        });
+        setTimeout(() => setCelebration('single'), 300);
+      } else {
+        toast.error('Task marked as not completed', {
+          duration: 2000,
+        });
       }
-      onRefresh();
+      
+      // Refresh to get updated status
+      setTimeout(() => {
+        onRefresh();
+        setCompletedTaskId(null);
+      }, 1000);
     } catch (error: any) {
       toast.error(error.response?.data?.detail || 'Unable to update task.');
     } finally {
       setUpdatingId(null);
     }
   };
+
+  // Separate tasks by status
+  const pendingTasks = tasks.filter(t => t.status === 'pending');
+  const completedTasks = tasks.filter(t => t.status === 'completed');
+  const cancelledTasks = tasks.filter(t => t.status === 'cancelled');
 
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-lg p-6 space-y-4">
