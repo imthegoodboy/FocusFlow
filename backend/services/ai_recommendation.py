@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from typing import List, Dict, Optional
 from database import routine_logs_collection, tasks_collection
 from collections import defaultdict
+from models.ml_models import predict_best_study_hour
 
 def get_productive_hours(user_id: str) -> List[Dict[str, int]]:
     """
