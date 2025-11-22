@@ -88,22 +88,22 @@ export default function TodayTasksList({ tasks, loading, onRefresh, currentTime 
                 <p className="text-lg font-semibold text-slate-900">{task.name}</p>
                 {task.plan_reason && <p className="text-sm text-slate-500">{task.plan_reason}</p>}
               </div>
-              <div className="flex items-center gap-2 text-2xl">
+              <div className="flex items-center gap-3">
                 <button
                   disabled={updatingId === task.id}
                   onClick={() => handleStatus(task.id, 'completed')}
-                  className="hover:scale-110 transition"
+                  className="px-4 py-2 rounded-xl bg-green-500 text-white font-bold hover:bg-green-600 transition shadow-lg disabled:opacity-50 text-lg"
                   title="Mark complete"
                 >
-                  ✅
+                  ✅ Yes
                 </button>
                 <button
                   disabled={updatingId === task.id}
                   onClick={() => handleStatus(task.id, 'cancelled')}
-                  className="hover:scale-110 transition"
+                  className="px-4 py-2 rounded-xl bg-red-500 text-white font-bold hover:bg-red-600 transition shadow-lg disabled:opacity-50 text-lg"
                   title="Skip task"
                 >
-                  ❌
+                  ❌ No
                 </button>
               </div>
             </div>
