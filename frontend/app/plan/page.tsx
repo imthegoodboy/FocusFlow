@@ -262,9 +262,11 @@ function PlanBuilder() {
           <button
             type="button"
             onClick={addTaskRow}
-            className="text-primary-600 font-semibold text-sm hover:underline"
+            disabled={tasks.length >= MAX_TASKS}
+            className="w-full md:w-auto px-6 py-3 rounded-xl bg-primary-100 text-primary-700 font-bold hover:bg-primary-200 transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            + Add another task
+            <span>➕</span>
+            Add Another Task {tasks.length >= MAX_TASKS ? `(Max ${MAX_TASKS})` : ''}
           </button>
         </div>
 
