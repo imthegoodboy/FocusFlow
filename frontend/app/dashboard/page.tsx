@@ -58,7 +58,22 @@ function DashboardContent() {
     <DashboardLayout profile={profile}>
       <div className="grid xl:grid-cols-[2fr,1fr] gap-6">
         <div className="space-y-6">
-          <PlanMyDayCard />
+          {/* Add Daily Task Button */}
+          {tasks.length === 0 && (
+            <div className="bg-gradient-to-r from-primary-500 to-primary-600 rounded-2xl border border-primary-400 shadow-xl p-8 text-center">
+              <h2 className="text-3xl font-bold text-white mb-3">Ready to plan your day?</h2>
+              <p className="text-primary-50 mb-6">
+                Add your tasks and let our AI create the perfect schedule for you
+              </p>
+              <Link
+                href="/plan"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-white text-primary-600 font-bold text-lg hover:bg-primary-50 transition shadow-lg"
+              >
+                <span>➕</span>
+                Add Daily Tasks
+              </Link>
+            </div>
+          )}
           <TodayTasksList tasks={tasks} loading={tasksLoading} onRefresh={refresh} currentTime={now} />
           <FocusTimer activeTask={activeTask} />
         </div>
