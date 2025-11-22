@@ -178,6 +178,42 @@ def save_day_plan(user_id: str, plan: List[PlannedTaskInput]) -> List[dict]:
 
 
 def _build_plan(user_id: str, tasks: List[PlanTaskItem]) -> List[dict]:
+    """
+    Build an optimized daily plan for the user.
+    
+    TODO: AI MODEL INTEGRATION
+    ==========================
+    This function currently uses simple if-else logic for task scheduling.
+    To integrate an AI model, replace the scheduling logic with:
+    
+    1. AI Model Input:
+       - User profile data (wake time, sleep time, class schedule)
+       - Task list with priorities and durations
+       - Historical productivity data
+       - User preferences and focus patterns
+       - Current day context (weekday/weekend, holidays)
+    
+    2. AI Model Output:
+       - Optimized task sequence (considering priority, energy levels, deadlines)
+       - Best time slots for each task (based on user's focus hours)
+       - Personalized scheduling suggestions
+       - Break recommendations between tasks
+    
+    3. Recommended AI Models:
+       - GPT-4/Claude for natural language reasoning about task priorities
+       - Reinforcement Learning model for optimal scheduling
+       - Time-series forecasting for predicting best focus hours
+       - Multi-objective optimization for balancing priorities
+    
+    4. Integration Steps:
+       a. Prepare input data in the format expected by the AI model
+       b. Call the AI model API (e.g., OpenAI, Anthropic, or custom ML model)
+       c. Parse the AI response to extract scheduled tasks
+       d. Validate and adjust the schedule if needed
+       e. Generate personalized plan_reason explanations using AI
+    
+    Current Implementation: Simple priority-based scheduling with if-else logic
+    """
     student = students_collection.find_one({"user_id": user_id})
     if not student:
         raise HTTPException(status_code=400, detail="Complete your onboarding before planning.")
@@ -195,17 +231,29 @@ def _build_plan(user_id: str, tasks: List[PlanTaskItem]) -> List[dict]:
 
     blocked = _build_blocks(today, class_schedule)
     planned: List[dict] = []
+    
+    # TODO: Replace with AI model for intelligent priority ordering
+    # AI should consider: task dependencies, deadlines, energy levels, user history
     priority_order = {"high": 3, "medium": 2, "low": 1}
     tasks_sorted = sorted(tasks, key=lambda t: -priority_order.get(t.priority, 1))
     sequence = 1
 
     for item in tasks_sorted:
         duration = timedelta(minutes=item.duration)
+        
+        # TODO: Replace with AI model for optimal time slot selection
+        # AI should consider: user's peak focus hours, task type, historical performance
         slot_start = _find_next_slot(current, duration, blocked, day_end)
         if slot_start is None:
             raise HTTPException(status_code=400, detail="Unable to schedule all tasks before bedtime.")
 
         slot_end = slot_start + duration
+        
+        # TODO: Replace with AI-generated personalized explanations
+        # AI should generate contextual reasons like:
+        # - "Scheduled during your peak focus hours (9-11 AM)"
+        # - "Placed before lunch to maintain momentum"
+        # - "High priority task scheduled early to reduce stress"
         reason = _build_reason(item, slot_start, class_schedule)
 
         planned.append(
