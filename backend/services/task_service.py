@@ -235,7 +235,6 @@ def _build_plan(user_id: str, tasks: List[PlanTaskItem]) -> List[dict]:
     planned: List[dict] = []
     
     # Get user's historical data for ML model predictions
-    from database import routine_logs_collection
     thirty_days_ago = datetime.now() - timedelta(days=30)
     recent_logs = list(routine_logs_collection.find({
         "user_id": user_id,
