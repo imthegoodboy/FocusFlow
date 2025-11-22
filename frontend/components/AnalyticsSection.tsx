@@ -56,10 +56,13 @@ export default function AnalyticsSection() {
       setFocusHours(focus.data);
       setSleepData(sleep.data.data || []);
       setMonthlyProgress(monthly.data.data || []);
-      setTaskComparison(comparison.data);
-      setProductivityTrends(trends.data.data || []);
+      setTaskComparison(comparison.data || null);
+      setProductivityTrends(trends.data?.data || []);
     } catch (error) {
       console.error('Failed to load analytics', error);
+      // Set defaults to prevent crashes
+      setTaskComparison(null);
+      setProductivityTrends([]);
     } finally {
       setLoading(false);
     }
