@@ -292,80 +292,88 @@ function PlanBuilder() {
       </div>
 
       {planResult.length > 0 && (
-        <div className="bg-white rounded-3xl shadow-xl border border-primary-100 p-8 space-y-4">
-          <div className="flex items-center justify-between">
+        <div className="bg-white rounded-3xl shadow-xl border-2 border-primary-200 p-8 space-y-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-bold text-slate-900">AI schedule for today</h2>
-              <p className="text-sm text-slate-500">Adjust timings if needed, then confirm.</p>
+              <h2 className="text-3xl font-bold text-slate-900 mb-2">✨ AI Schedule for Today</h2>
+              <p className="text-slate-600">Review and adjust timings if needed, then confirm to start your day.</p>
             </div>
             <button
               onClick={handleConfirm}
               disabled={confirming}
-              className="px-5 py-2 rounded-xl bg-primary-500 text-white font-semibold hover:bg-primary-600 disabled:opacity-60"
+              className="px-8 py-4 rounded-xl bg-green-500 text-white font-bold text-lg hover:bg-green-600 disabled:opacity-60 shadow-lg transition"
             >
-              {confirming ? 'Saving…' : 'Confirm today’s schedule'}
+              {confirming ? '💾 Saving…' : '✅ Confirm Schedule'}
             </button>
           </div>
-          <div className="space-y-3">
-            {planResult.map((task, index) => (
-              <div
-                key={`${task.name}-${index}`}
-                className="flex flex-col gap-4 border border-slate-100 rounded-2xl px-4 py-3 bg-slate-50"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div>
-                    <p className="text-xs uppercase tracking-wide text-primary-500 font-semibold">
-                      {task.sequence ? `Step ${task.sequence}` : 'Task'}
-                    </p>
-                    <p className="text-lg font-semibold text-slate-900">{task.name}</p>
+          <div className="space-y-4">
+            {planResult.map((task, index) => {
+              const priorityColors = {
+                high: 'border-red-300 bg-red-50',
+                medium: 'border-yellow-300 bg-yellow-50',
+                low: 'border-blue-300 bg-blue-50',
+              };
+              return (
+                <div
+                  key={`${task.name}-${index}`}
+                  className={`flex flex-col gap-4 border-2 ${priorityColors[task.priority]} rounded-2xl px-6 py-5 shadow-md`}
+                >
+                  <div className="flex flex-wrap items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="text-2xl font-black text-primary-600">#{task.sequence || index + 1}</span>
+                        <p className="text-xl font-bold text-slate-900">{task.name}</p>
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                          task.priority === 'high' ? 'bg-red-500 text-white' :
+                          task.priority === 'medium' ? 'bg-yellow-500 text-white' :
+                          'bg-blue-500 text-white'
+                        }`}>
+                          {task.priority.toUpperCase()}
+                        </span>
+                      </div>
+                      {task.plan_reason && (
+                        <div className="bg-white/80 rounded-lg p-3 mt-2">
+                          <p className="text-sm font-semibold text-slate-700 mb-1">💡 AI Suggestion:</p>
+                          <p className="text-sm text-slate-600">{task.plan_reason}</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div className="text-sm text-slate-600">
-                    <label className="text-xs font-semibold text-slate-500 block">Priority</label>
-                    <select
-                      value={task.priority}
-                      onChange={(e) => handlePriorityEdit(index, e.target.value as 'high' | 'medium' | 'low')}
-                      className="border border-slate-200 rounded-lg px-3 py-1 focus:ring-2 focus:ring-primary-400 outline-none"
-                    >
-                      <option value="high">High</option>
-                      <option value="medium">Medium</option>
-                      <option value="low">Low</option>
-                    </select>
+                  <div className="grid md:grid-cols-3 gap-4 bg-white/60 rounded-xl p-4">
+                    <div>
+                      <label className="text-xs font-bold text-slate-700 block mb-2">⏰ Start Time</label>
+                      <input
+                        type="time"
+                        value={formatTime(task.scheduled_start)}
+                        onChange={(e) => handleScheduleEdit(index, 'time', e.target.value)}
+                        className="w-full border-2 border-slate-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-primary-400 focus:border-primary-500 outline-none font-semibold"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-slate-700 block mb-2">⏱️ Duration (minutes)</label>
+                      <input
+                        type="number"
+                        min={10}
+                        max={300}
+                        value={task.duration}
+                        onChange={(e) => handleScheduleEdit(index, 'duration', e.target.value)}
+                        className="w-full border-2 border-slate-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-primary-400 focus:border-primary-500 outline-none font-semibold"
+                      />
+                    </div>
+                    <div className="flex flex-col justify-center">
+                      <p className="text-sm font-semibold text-slate-700">
+                        Ends at{' '}
+                        <span className="text-primary-600 font-bold">
+                          {task.scheduled_end
+                            ? new Date(task.scheduled_end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                            : '—'}
+                        </span>
+                      </p>
+                    </div>
                   </div>
                 </div>
-                {task.plan_reason && <p className="text-sm text-slate-500">{task.plan_reason}</p>}
-                <div className="grid md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="text-xs font-semibold text-slate-500">Start time</label>
-                    <input
-                      type="time"
-                      value={formatTime(task.scheduled_start)}
-                      onChange={(e) => handleScheduleEdit(index, 'time', e.target.value)}
-                      className="w-full border border-slate-200 rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-400 outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs font-semibold text-slate-500">Duration (mins)</label>
-                    <input
-                      type="number"
-                      min={10}
-                      max={300}
-                      value={task.duration}
-                      onChange={(e) => handleScheduleEdit(index, 'duration', e.target.value)}
-                      className="w-full border border-slate-200 rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-400 outline-none"
-                    />
-                  </div>
-                  <div className="text-sm text-slate-600">
-                    <p>
-                      Ends at{' '}
-                      {task.scheduled_end
-                        ? new Date(task.scheduled_end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                        : '—'}
-                    </p>
-                    <p>Sequence #{task.sequence}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
