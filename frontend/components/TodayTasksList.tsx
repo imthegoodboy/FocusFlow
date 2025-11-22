@@ -102,22 +102,24 @@ export default function TodayTasksList({ tasks, loading, onRefresh, currentTime 
                   </p>
                 )}
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 w-full md:w-auto justify-end">
                 <button
                   disabled={updatingId === task.id}
                   onClick={() => handleStatus(task.id, 'completed')}
-                  className="px-4 py-2 rounded-xl bg-green-500 text-white font-bold hover:bg-green-600 transition shadow-lg disabled:opacity-50 text-lg"
+                  className="px-6 py-3 rounded-xl bg-green-500 text-white font-bold hover:bg-green-600 transition shadow-lg disabled:opacity-50 text-base flex items-center gap-2 flex-1 md:flex-initial justify-center"
                   title="Mark complete"
                 >
-                  ✅ Yes
+                  <span>✅</span>
+                  <span>Yes</span>
                 </button>
                 <button
                   disabled={updatingId === task.id}
                   onClick={() => handleStatus(task.id, 'cancelled')}
-                  className="px-4 py-2 rounded-xl bg-red-500 text-white font-bold hover:bg-red-600 transition shadow-lg disabled:opacity-50 text-lg"
+                  className="px-6 py-3 rounded-xl bg-red-500 text-white font-bold hover:bg-red-600 transition shadow-lg disabled:opacity-50 text-base flex items-center gap-2 flex-1 md:flex-initial justify-center"
                   title="Skip task"
                 >
-                  ❌ No
+                  <span>❌</span>
+                  <span>No</span>
                 </button>
               </div>
             </div>
