@@ -124,6 +124,7 @@ function DashboardContent() {
           </div>
           <aside className="space-y-6">
             <StreaksDisplay refreshKey={tasks.map((task) => `${task.id}-${task.status}`).join('|')} />
+            <AchievementsPanel />
             <MotivationalQuote />
           </aside>
         </div>
