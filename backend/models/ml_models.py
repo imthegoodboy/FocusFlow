@@ -105,7 +105,7 @@ def predict_best_study_hour(
     }
 
 # ============================================================================
-# MODEL 2: PRODUCTIVITY PREDICTION
+# MODEL 2: PRODUCTIVITY PREDICTION (BentoML Hosted)
 # ============================================================================
 
 def predict_productivity_score(
@@ -122,6 +122,9 @@ def predict_productivity_score(
     """
     Predict student productivity score based on various factors.
     
+    NOTE: This model is hosted on BentoML due to its large size.
+    The function first tries to use BentoML, then falls back to local model or heuristics.
+    
     Args:
         sleep_hours: Hours of sleep
         study_hours: Hours of study
@@ -136,45 +139,62 @@ def predict_productivity_score(
     Returns:
         Dict with 'productivity_score' (0-10) and 'confidence' (0-1)
     """
+    # Try BentoML first (hosted model)
+    try:
+        from services.bentoml_client import predict_productivity_bentoml
+        result = predict_productivity_bentoml(
+            sleep_hours, study_hours, screen_time, exercise_duration,
+            tasks_completed, tasks_total, streak_days, day_of_week, stress_level
+        )
+        # If BentoML returns valid result, use it
+        if result.get('productivity_score', 0) > 0:
+            return result
+    except Exception as e:
+        print(f"BentoML prediction failed: {e}, trying local model...")
+    
+    # Fallback to local model if available
     _load_models()
     
-    if _productivity_model is None:
-        # Fallback calculation
+    if _productivity_model is not None:
+        # Prepare features
         completion_rate = tasks_completed / tasks_total if tasks_total > 0 else 0
-        score = 5.0
-        if 7 <= sleep_hours <= 9:
-            score += 2.0
-        score += completion_rate * 2.0
-        score = max(0, min(10, score))
-        return {'productivity_score': score, 'confidence': 0.5}
+        
+        features = np.array([[
+            sleep_hours,
+            study_hours,
+            screen_time,
+            exercise_duration,
+            tasks_completed,
+            tasks_total,
+            completion_rate,
+            streak_days,
+            day_of_week,
+            stress_level
+        ]])
+        
+        # Predict
+        predicted_score = _productivity_model.predict(features)[0]
+        predicted_score = max(0, min(10, predicted_score))
+        
+        # Calculate confidence
+        confidence = min(0.95, 0.7 + (completion_rate * 0.25))
+        
+        return {
+            'productivity_score': float(predicted_score),
+            'confidence': confidence
+        }
     
-    # Prepare features
+    # Final fallback to heuristic calculation
     completion_rate = tasks_completed / tasks_total if tasks_total > 0 else 0
-    
-    features = np.array([[
-        sleep_hours,
-        study_hours,
-        screen_time,
-        exercise_duration,
-        tasks_completed,
-        tasks_total,
-        completion_rate,
-        streak_days,
-        day_of_week,
-        stress_level
-    ]])
-    
-    # Predict
-    predicted_score = _productivity_model.predict(features)[0]
-    predicted_score = max(0, min(10, predicted_score))
-    
-    # Calculate confidence
-    confidence = min(0.95, 0.7 + (completion_rate * 0.25))
-    
-    return {
-        'productivity_score': float(predicted_score),
-        'confidence': confidence
-    }
+    score = 5.0
+    if 7 <= sleep_hours <= 9:
+        score += 2.0
+    elif sleep_hours < 6:
+        score -= 1.5
+    score += min(study_hours * 0.3, 2.0)
+    score += completion_rate * 2.0
+    score = max(0, min(10, score))
+    return {'productivity_score': score, 'confidence': 0.5}
 
 # ============================================================================
 # MODEL 3: TASK SCHEDULING
