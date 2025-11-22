@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from routers import auth, tasks, routine, analytics, notifications, streaks, student, support
+from routers import auth, tasks, routine, analytics, notifications, streaks, student, support, achievements
 
 os.makedirs(os.path.join("uploads", "avatars"), exist_ok=True)
 
