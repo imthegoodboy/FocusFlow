@@ -16,10 +16,10 @@ interface DashboardLayoutProps {
 }
 
 const navLinks = [
-  { href: '/dashboard', label: 'Dashboard' },
-  { href: '/plan', label: 'Plan day' },
-  { href: '/analytics', label: 'Analytics' },
-  { href: '/onboarding', label: 'Profile' },
+  { href: '/dashboard', label: 'Dashboard', icon: '📊' },
+  { href: '/plan', label: 'Plan Day', icon: '📅' },
+  { href: '/analytics', label: 'Analytics', icon: '📈' },
+  { href: '/onboarding', label: 'Profile', icon: '👤' },
 ];
 
 export default function DashboardLayout({ children, profile }: DashboardLayoutProps) {
@@ -33,16 +33,21 @@ export default function DashboardLayout({ children, profile }: DashboardLayoutPr
             <Link href="/home" className="text-2xl font-bold text-primary-600">
               FocusFlow
             </Link>
-            <nav className="hidden md:flex gap-6 text-sm font-semibold text-slate-600">
+            <nav className="hidden md:flex gap-4 text-sm font-semibold">
               {navLinks.map((link) => {
                 const active = pathname === link.href;
                 return (
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={active ? 'text-primary-600' : 'hover:text-primary-600'}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl transition ${
+                      active
+                        ? 'bg-primary-500 text-white shadow-lg'
+                        : 'text-slate-600 hover:bg-primary-50 hover:text-primary-600'
+                    }`}
                   >
-                    {link.label}
+                    <span>{link.icon}</span>
+                    <span>{link.label}</span>
                   </Link>
                 );
               })}
