@@ -241,35 +241,43 @@ def get_task_comparison(user_id: str) -> Dict:
     last_week_start = this_week_start - timedelta(days=7)
     last_week_end = this_week_start
     
-    this_week_tasks = list(tasks_collection.find({
-        "user_id": user_id,
-        "created_at": {"$gte": datetime(this_week_start.year, this_week_start.month, this_week_start.day)}
-    }))
-    
-    last_week_tasks = list(tasks_collection.find({
-        "user_id": user_id,
-        "created_at": {
-            "$gte": datetime(last_week_start.year, last_week_start.month, last_week_start.day),
-            "$lt": datetime(last_week_end.year, last_week_end.month, last_week_end.day)
+    try:
+        this_week_tasks = list(tasks_collection.find({
+            "user_id": user_id,
+            "created_at": {"$gte": datetime(this_week_start.year, this_week_start.month, this_week_start.day)}
+        }))
+        
+        last_week_tasks = list(tasks_collection.find({
+            "user_id": user_id,
+            "created_at": {
+                "$gte": datetime(last_week_start.year, last_week_start.month, last_week_start.day),
+                "$lt": datetime(last_week_end.year, last_week_end.month, last_week_end.day)
+            }
+        }))
+        
+        this_week_completed = len([t for t in this_week_tasks if t.get("status") == "completed"])
+        last_week_completed = len([t for t in last_week_tasks if t.get("status") == "completed"])
+        
+        return {
+            "this_week": {
+                "total": len(this_week_tasks),
+                "completed": this_week_completed,
+                "pending": len([t for t in this_week_tasks if t.get("status") == "pending"])
+            },
+            "last_week": {
+                "total": len(last_week_tasks),
+                "completed": last_week_completed,
+                "pending": len([t for t in last_week_tasks if t.get("status") == "pending"])
+            },
+            "improvement": this_week_completed - last_week_completed
         }
-    }))
-    
-    this_week_completed = len([t for t in this_week_tasks if t.get("status") == "completed"])
-    last_week_completed = len([t for t in last_week_tasks if t.get("status") == "completed"])
-    
-    return {
-        "this_week": {
-            "total": len(this_week_tasks),
-            "completed": this_week_completed,
-            "pending": len([t for t in this_week_tasks if t.get("status") == "pending"])
-        },
-        "last_week": {
-            "total": len(last_week_tasks),
-            "completed": last_week_completed,
-            "pending": len([t for t in last_week_tasks if t.get("status") == "pending"])
-        },
-        "improvement": this_week_completed - last_week_completed
-    }
+    except Exception as e:
+        # Return default values on error
+        return {
+            "this_week": {"total": 0, "completed": 0, "pending": 0},
+            "last_week": {"total": 0, "completed": 0, "pending": 0},
+            "improvement": 0
+        }
 
 def get_productivity_trends(user_id: str) -> List[Dict]:
     """Get productivity trends over time"""
