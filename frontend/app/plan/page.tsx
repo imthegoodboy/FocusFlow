@@ -274,13 +274,20 @@ function PlanBuilder() {
           <button
             onClick={handlePlan}
             disabled={planning}
-            className="px-6 py-3 rounded-xl bg-primary-500 text-white font-semibold hover:bg-primary-600 transition shadow-lg disabled:opacity-60"
+            className="px-8 py-4 rounded-xl bg-primary-500 text-white font-bold text-lg hover:bg-primary-600 transition shadow-lg disabled:opacity-60 flex items-center gap-2"
           >
-            {planning ? 'AI is planning…' : 'Plan my day'}
+            {planning ? (
+              <>
+                <span className="animate-spin">🤖</span>
+                AI is thinking...
+              </>
+            ) : (
+              <>
+                <span>✨</span>
+                Plan My Day
+              </>
+            )}
           </button>
-          <Link href="/dashboard" className="text-primary-600 font-semibold hover:underline">
-            Back to dashboard
-          </Link>
         </div>
       </div>
 
