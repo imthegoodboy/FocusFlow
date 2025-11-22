@@ -161,8 +161,8 @@ export default function AnalyticsSection() {
 
       {/* Completed vs Pending */}
       {taskStats && (
-        <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-          <h3 className="text-lg font-semibold mb-4">Completed vs Pending Tasks</h3>
+        <div className="bg-white p-6 rounded-xl shadow-lg border-2 border-primary-100">
+          <h3 className="text-xl font-bold mb-4 text-slate-900">📊 Completed vs Pending Tasks</h3>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
