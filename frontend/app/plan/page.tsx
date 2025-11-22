@@ -25,7 +25,7 @@ type PreviewTask = {
   sequence?: number;
 };
 
-const MAX_TASKS = 6;
+const MAX_TASKS = 5;
 
 const createEmptyTask = (): DraftTask => ({
   name: '',
@@ -86,7 +86,7 @@ function PlanBuilder() {
 
   const addTaskRow = () => {
     if (tasks.length >= MAX_TASKS) {
-      toast.error('You can only plan up to six tasks.');
+      toast.error(`You can only plan up to ${MAX_TASKS} tasks.`);
       return;
     }
     setTasks((prev) => [...prev, createEmptyTask()]);
@@ -197,7 +197,7 @@ function PlanBuilder() {
           <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mt-2">List the tasks you’d like to finish</h1>
           <p className="text-slate-600 mt-2">
             FocusFlow analyses your wake time, class schedule, and breaks to propose the best order and timing. Add up
-            to six tasks and tell us how urgent each one feels.
+            to {MAX_TASKS} tasks and tell us how urgent each one feels.
           </p>
         </div>
 

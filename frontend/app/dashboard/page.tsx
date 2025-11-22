@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import DashboardLayout from '@/components/DashboardLayout';
 import StreaksDisplay from '@/components/StreaksDisplay';
-import PlanMyDayCard from '@/components/PlanMyDayCard';
 import TodayTasksList from '@/components/TodayTasksList';
 import FocusTimer from '@/components/FocusTimer';
 import { useStudentProfile } from '@/hooks/useStudentProfile';
