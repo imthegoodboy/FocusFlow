@@ -218,44 +218,44 @@ function PlanBuilder() {
               className="grid grid-cols-1 md:grid-cols-[2fr,1fr,1fr,auto] gap-4 items-end border-2 border-slate-200 rounded-2xl p-5 bg-slate-50 hover:bg-white transition"
             >
               <div>
-                <label className="text-xs font-semibold text-slate-500">Task name</label>
+                <label className="text-xs font-bold text-slate-700 mb-1 block">📝 Task Name</label>
                 <input
                   type="text"
                   value={task.name}
                   onChange={(e) => handleTaskChange(index, 'name', e.target.value)}
-                  className="w-full border border-slate-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-primary-400 outline-none"
+                  className="w-full border-2 border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary-400 focus:border-primary-500 outline-none font-medium"
                   placeholder="e.g. Finish chemistry notes"
                 />
               </div>
               <div>
-                <label className="text-xs font-semibold text-slate-500">Duration (minutes)</label>
+                <label className="text-xs font-bold text-slate-700 mb-1 block">⏱️ Duration (minutes)</label>
                 <input
                   type="number"
                   min={15}
                   max={240}
                   value={task.duration}
                   onChange={(e) => handleTaskChange(index, 'duration', e.target.value)}
-                  className="w-full border border-slate-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-primary-400 outline-none"
+                  className="w-full border-2 border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary-400 focus:border-primary-500 outline-none font-medium"
                 />
               </div>
               <div>
-                <label className="text-xs font-semibold text-slate-500">Priority</label>
+                <label className="text-xs font-bold text-slate-700 mb-1 block">⚡ Priority</label>
                 <select
                   value={task.priority}
                   onChange={(e) => handleTaskChange(index, 'priority', e.target.value)}
-                  className="w-full border border-slate-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-primary-400 outline-none"
+                  className="w-full border-2 border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary-400 focus:border-primary-500 outline-none font-medium"
                 >
-                  <option value="high">High</option>
-                  <option value="medium">Medium</option>
-                  <option value="low">Low</option>
+                  <option value="high">🔴 High</option>
+                  <option value="medium">🟡 Medium</option>
+                  <option value="low">🔵 Low</option>
                 </select>
               </div>
               <button
                 type="button"
                 onClick={() => removeTaskRow(index)}
-                className="text-sm text-red-500 hover:underline justify-self-end"
+                className="px-4 py-3 rounded-xl bg-red-500 text-white font-bold hover:bg-red-600 transition shadow-md text-sm"
               >
-                Remove
+                🗑️ Remove
               </button>
             </div>
           ))}
