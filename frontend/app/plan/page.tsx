@@ -191,6 +191,16 @@ function PlanBuilder() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-10">
+      {/* Back Button */}
+      <div className="flex items-center gap-4">
+        <button
+          onClick={() => router.push('/dashboard')}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 transition font-semibold"
+        >
+          <span>←</span> Back to Dashboard
+        </button>
+      </div>
+
       <div className="bg-white rounded-3xl shadow-2xl border border-primary-100 p-8 space-y-6">
         <div>
           <p className="text-sm uppercase tracking-[0.3em] text-primary-500 font-semibold">Plan my day</p>
