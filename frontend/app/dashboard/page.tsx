@@ -7,6 +7,7 @@ import DashboardLayout from '@/components/DashboardLayout';
 import StreaksDisplay from '@/components/StreaksDisplay';
 import TodayTasksList from '@/components/TodayTasksList';
 import FocusTimer from '@/components/FocusTimer';
+import QuickStats from '@/components/QuickStats';
 import { useStudentProfile } from '@/hooks/useStudentProfile';
 import { useTodayTasks, PlannedTask } from '@/hooks/useTodayTasks';
 
