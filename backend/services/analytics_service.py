@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta, date
 from typing import Dict, List, Optional
 from database import routine_logs_collection, tasks_collection, streaks_collection
+from models.ml_models import predict_productivity_score
 
 def get_daily_productivity(user_id: str, days: int = 7) -> List[Dict]:
     """Get daily productivity scores for the last N days"""
