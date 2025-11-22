@@ -3,7 +3,8 @@ from typing import Optional
 from services.analytics_service import (
     get_daily_productivity, get_weekly_productivity,
     get_focus_hours, get_task_statistics,
-    get_sleep_performance_correlation, get_monthly_progress
+    get_sleep_performance_correlation, get_monthly_progress,
+    get_task_comparison, get_productivity_trends
 )
 from auth import get_current_user_id
 
@@ -47,7 +48,19 @@ async def get_sleep_performance_endpoint(user_id: str = Depends(get_current_user
 
 @router.get("/monthly-progress")
 async def get_monthly_progress_endpoint(user_id: str = Depends(get_current_user_id)):
-    """Get monthly progress summary"""
+    """Get monthly progress data"""
     progress = get_monthly_progress(user_id)
-    return progress
+    return {"data": progress}
+
+@router.get("/task-comparison")
+async def get_task_comparison_endpoint(user_id: str = Depends(get_current_user_id)):
+    """Get task comparison (this week vs last week)"""
+    comparison = get_task_comparison(user_id)
+    return comparison
+
+@router.get("/productivity-trends")
+async def get_productivity_trends_endpoint(user_id: str = Depends(get_current_user_id)):
+    """Get productivity trends over time"""
+    trends = get_productivity_trends(user_id)
+    return {"data": trends}
 
