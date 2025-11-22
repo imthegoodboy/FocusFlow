@@ -53,35 +53,48 @@ export default function FocusTimer({ activeTask }: FocusTimerProps) {
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-lg p-6 flex items-center gap-6">
-      <div className="relative w-32 h-32">
+    <div className={`${bgColor} rounded-2xl border-2 ${color.replace('stroke-', 'border-')} shadow-xl p-8 flex flex-col md:flex-row items-center gap-8`}>
+      <div className="relative w-40 h-40 flex-shrink-0">
         <svg className="w-full h-full -rotate-90">
-          <circle cx="64" cy="64" r="60" className="stroke-slate-200" strokeWidth="8" fill="transparent" />
+          <circle 
+            cx="80" 
+            cy="80" 
+            r="72" 
+            className="stroke-slate-200" 
+            strokeWidth="10" 
+            fill="transparent" 
+          />
           <circle
-            cx="64"
-            cy="64"
-            r="60"
+            cx="80"
+            cy="80"
+            r="72"
             className={color}
-            strokeWidth="8"
+            strokeWidth="10"
             fill="transparent"
-            strokeDasharray={2 * Math.PI * 60}
-            strokeDashoffset={((100 - progress) / 100) * 2 * Math.PI * 60}
+            strokeDasharray={2 * Math.PI * 72}
+            strokeDashoffset={((100 - progress) / 100) * 2 * Math.PI * 72}
             strokeLinecap="round"
+            style={{ transition: 'stroke-dashoffset 0.5s ease' }}
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-3xl font-bold text-slate-900">
+          <span className={`text-4xl font-black ${textColor}`}>
             {minutes}:{seconds.toString().padStart(2, '0')}
           </span>
-          <span className="text-xs text-slate-500">remaining</span>
+          <span className={`text-xs font-semibold ${textColor} opacity-80`}>remaining</span>
         </div>
       </div>
-      <div className="flex-1">
-        <p className="text-sm uppercase tracking-[0.3em] text-primary-500 font-semibold">Focus mode</p>
-        <h3 className="text-xl font-semibold text-slate-900">{activeTask.name}</h3>
-        <p className="text-slate-500">
-          {activeTask.plan_reason || 'Timer kicks off automatically for every scheduled block.'}
+      <div className="flex-1 text-center md:text-left">
+        <p className="text-sm uppercase tracking-[0.3em] text-primary-600 font-bold mb-2">⏱️ Focus Timer</p>
+        <h3 className="text-2xl font-bold text-slate-900 mb-2">{activeTask.name}</h3>
+        <p className="text-slate-600">
+          {activeTask.plan_reason || 'Stay focused! Timer automatically tracks your progress.'}
         </p>
+        <div className="mt-4 flex items-center justify-center md:justify-start gap-2">
+          <span className={`px-3 py-1 rounded-full text-xs font-bold ${textColor} ${bgColor}`}>
+            {progress > 60 ? '🟢 On Track' : progress > 30 ? '🟡 Keep Going' : '🔴 Hurry Up!'}
+          </span>
+        </div>
       </div>
     </div>
   );

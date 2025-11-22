@@ -40,40 +40,41 @@ export default function StreaksDisplay({ refreshKey }: Props) {
   ];
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-lg p-6 space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm uppercase tracking-[0.3em] text-primary-500 font-semibold">Consistency</p>
-          <h3 className="text-2xl font-bold text-slate-900">Your streak is on fire</h3>
-        </div>
-        <div className="w-20 h-20">
+    <div className="bg-gradient-to-br from-primary-50 to-primary-100 rounded-2xl border-2 border-primary-200 shadow-xl p-6 space-y-6">
+      <div className="flex flex-col items-center text-center">
+        <div className="w-32 h-32 mb-4">
           <iframe
             src="https://lottie.host/embed/523ae075-4976-4af6-b0ab-ff5f7fbe3299/HhArX04veW.lottie"
             className="w-full h-full border-0"
-            title="Streak animation"
+            title="Streak fire animation"
           />
+        </div>
+        <p className="text-sm uppercase tracking-[0.3em] text-primary-600 font-bold mb-2">🔥 Streak</p>
+        <div className="flex items-baseline gap-2 justify-center">
+          <span className="text-6xl font-black text-primary-600">{streaks.overall_streak}</span>
+          <span className="text-lg text-slate-600 font-semibold">days</span>
+        </div>
+        <p className="text-sm text-slate-600 mt-1">Keep the fire burning! 🔥</p>
+      </div>
+
+      <div className="space-y-3">
+        <p className="text-xs font-bold text-slate-700 uppercase tracking-wide">Breakdown</p>
+        <div className="space-y-2">
+          {chips.map((chip) => (
+            <div
+              key={chip.label}
+              className="flex items-center justify-between px-4 py-3 rounded-xl bg-white/80 backdrop-blur-sm border border-primary-200 shadow-sm"
+            >
+              <span className="text-sm font-semibold text-slate-700">{chip.label}</span>
+              <span className="text-lg font-bold text-primary-600">{chip.value}</span>
+            </div>
+          ))}
         </div>
       </div>
 
-      <div className="flex items-baseline gap-3">
-        <span className="text-5xl font-black text-primary-600">{streaks.overall_streak}</span>
-        <span className="text-slate-500">day overall streak</span>
-      </div>
-
-      <div className="flex flex-wrap gap-2">
-        {chips.map((chip) => (
-          <div
-            key={chip.label}
-            className="px-4 py-2 rounded-full bg-primary-50 text-primary-700 text-sm font-semibold border border-primary-100"
-          >
-            {chip.label}: {chip.value}
-          </div>
-        ))}
-      </div>
-
       {streaks.last_updated && (
-        <p className="text-xs text-slate-400">
-          Updated {new Date(streaks.last_updated).toLocaleDateString()}
+        <p className="text-xs text-center text-slate-500">
+          Last updated {new Date(streaks.last_updated).toLocaleDateString()}
         </p>
       )}
     </div>
