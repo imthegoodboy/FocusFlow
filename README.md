@@ -360,67 +360,166 @@ FocusFlow uses **MongoDB** with the following collections:
 
 ## 🔄 Application Flow
 
+### Complete User Journey Flowchart
+
 ```
-┌─────────────────┐
-│   User Login    │
-└────────┬─────────┘
-         │
-         ▼
-┌─────────────────┐
-│  Profile Setup   │
-│  (Survey Data)   │
-└────────┬─────────┘
-         │
-         ▼
-┌─────────────────┐
-│   Dashboard     │
-└────────┬─────────┘
-         │
-    ┌────┴────┐
-    │         │
-    ▼         ▼
-┌────────┐ ┌──────────┐
-│ Add    │ │ View     │
-│ Tasks  │ │ Analytics│
-└───┬────┘ └────┬─────┘
-    │           │
-    ▼           ▼
-┌─────────────────────┐
-│  Plan My Day        │
-│  (AI Scheduling)    │
-└──────────┬──────────┘
-           │
-           ▼
-┌─────────────────────┐
-│  ML Models Predict  │
-│  - Study Time       │
-│  - Task Scheduling  │
-│  - Productivity     │
-└──────────┬──────────┘
-           │
-           ▼
-┌─────────────────────┐
-│  Gemini API         │
-│  Generates Reasons  │
-└──────────┬──────────┘
-           │
-           ▼
-┌─────────────────────┐
-│  Optimized Schedule │
-│  Displayed to User  │
-└──────────┬──────────┘
-           │
-           ▼
-┌─────────────────────┐
-│  User Completes      │
-│  Tasks & Logs Data  │
-└──────────┬──────────┘
-           │
-           ▼
-┌─────────────────────┐
-│  Analytics Updated  │
-│  Streaks Updated    │
-└─────────────────────┘
+                    ┌─────────────────────┐
+                    │   Landing Page      │
+                    │   (Home/About)      │
+                    └──────────┬──────────┘
+                               │
+                    ┌──────────┴──────────┐
+                    │                     │
+                    ▼                     ▼
+            ┌──────────────┐    ┌──────────────┐
+            │   Register    │    │    Login      │
+            └───────┬───────┘    └───────┬──────┘
+                    │                    │
+                    └──────────┬─────────┘
+                               │
+                    ┌──────────▼──────────┐
+                    │  Profile Setup      │
+                    │  - Personal Info   │
+                    │  - Survey Data      │
+                    │  - Class Schedule  │
+                    └──────────┬──────────┘
+                               │
+                    ┌──────────▼──────────┐
+                    │    Dashboard        │
+                    │  - Productivity    │
+                    │  - Quick Stats     │
+                    │  - Streaks         │
+                    └──────────┬──────────┘
+                               │
+                ┌──────────────┼──────────────┐
+                │              │              │
+                ▼              ▼              ▼
+        ┌───────────┐  ┌──────────┐  ┌──────────┐
+        │ Add Tasks  │  │ Analytics│  │  Profile │
+        └─────┬─────┘  └──────────┘  └──────────┘
+              │
+              ▼
+    ┌─────────────────────┐
+    │  Plan My Day Page   │
+    │  - Enter Tasks      │
+    │  - Set Priorities   │
+    └──────────┬──────────┘
+               │
+               ▼
+    ┌─────────────────────┐
+    │  Click "Plan My Day" │
+    └──────────┬──────────┘
+               │
+               ▼
+    ┌─────────────────────┐
+    │  AI Processing      │
+    │  - Load User Data  │
+    │  - ML Predictions │
+    │  - Gemini NLP      │
+    └──────────┬──────────┘
+               │
+    ┌──────────┴──────────┐
+    │                     │
+    ▼                     ▼
+┌──────────┐      ┌──────────────┐
+│ Study    │      │ Task         │
+│ Time     │      │ Scheduling   │
+│ Model    │      │ Model        │
+│ (Local)  │      │ (Local)      │
+└────┬─────┘      └──────┬───────┘
+     │                   │
+     └──────────┬────────┘
+                │
+                ▼
+    ┌─────────────────────┐
+    │ Productivity Model  │
+    │   (BentoML)         │
+    └──────────┬──────────┘
+               │
+               ▼
+    ┌─────────────────────┐
+    │  Gemini API         │
+    │  Generate Reasons   │
+    └──────────┬──────────┘
+               │
+               ▼
+    ┌─────────────────────┐
+    │  Schedule Preview   │
+    │  - Times            │
+    │  - Reasons         │
+    │  - Editable        │
+    └──────────┬──────────┘
+               │
+               ▼
+    ┌─────────────────────┐
+    │  User Confirms      │
+    │  Schedule           │
+    └──────────┬──────────┘
+               │
+               ▼
+    ┌─────────────────────┐
+    │  Dashboard Shows    │
+    │  - Today's Tasks   │
+    │  - Timer           │
+    │  - Productivity     │
+    └──────────┬──────────┘
+               │
+               ▼
+    ┌─────────────────────┐
+    │  User Completes     │
+    │  Tasks (Yes/No)     │
+    └──────────┬──────────┘
+               │
+               ▼
+    ┌─────────────────────┐
+    │  Real-time Updates  │
+    │  - Score Updates    │
+    │  - Streaks Update   │
+    │  - Analytics Update │
+    └─────────────────────┘
+```
+
+### Code Flow (Match-Code Flow)
+
+#### Task Scheduling Flow
+```
+User Input (Tasks)
+    ↓
+task_service.py::_build_plan()
+    ↓
+Load User History (30 days)
+    ↓
+predict_best_study_hour() [ML Model 1]
+    ↓
+predict_optimal_schedule_time() [ML Model 3]
+    ↓
+generate_scheduling_reason() [Gemini API]
+    ↓
+Return Scheduled Tasks
+```
+
+#### Productivity Prediction Flow
+```
+User Completes Task
+    ↓
+analytics_service.py
+    ↓
+predict_productivity_score() [BentoML Model]
+    ↓
+Update Dashboard Score
+    ↓
+Update Analytics
+```
+
+#### Study Recommendations Flow
+```
+User Views Recommendations
+    ↓
+ai_recommendation.py::get_productive_hours()
+    ↓
+predict_best_study_hour() [ML Model 1]
+    ↓
+Return Productive Hours
 ```
 
 ### Detailed Flow
