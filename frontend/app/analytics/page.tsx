@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import DashboardLayout from '@/components/DashboardLayout';
 import AnalyticsSection from '@/components/AnalyticsSection';
@@ -14,6 +15,7 @@ export default function AnalyticsPage() {
 }
 
 function AnalyticsContent() {
+  const router = useRouter();
   const { profile, loading } = useStudentProfile();
 
   if (loading) {
@@ -29,7 +31,17 @@ function AnalyticsContent() {
 
   return (
     <DashboardLayout profile={profile}>
-      <AnalyticsSection />
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => window.history.back()}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 transition font-semibold"
+          >
+            <span>←</span> Back
+          </button>
+        </div>
+        <AnalyticsSection />
+      </div>
     </DashboardLayout>
   );
 }
