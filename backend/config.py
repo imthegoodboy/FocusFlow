@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "your-secret-key-here-change-in-production"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
+    GEMINI_API_KEY: str = ""  # Add your Gemini API key in .env file
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
