@@ -32,6 +32,7 @@ app.include_router(notifications.router)
 app.include_router(streaks.router)
 app.include_router(student.router)
 app.include_router(support.router)
+app.include_router(achievements.router)
 
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
