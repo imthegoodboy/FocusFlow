@@ -6,7 +6,7 @@ from models.ml_models import predict_best_study_hour
 
 def get_productive_hours(user_id: str) -> List[Dict[str, int]]:
     """
-    Analyze past routine data to determine most productive hours.
+    Analyze past routine data to determine most productive hours using ML model.
     Returns list of {start_hour, end_hour, score} dicts.
     """
     # Get last 30 days of routine logs
@@ -24,50 +24,53 @@ def get_productive_hours(user_id: str) -> List[Dict[str, int]]:
             {"start_hour": 19, "end_hour": 21, "score": 7}
         ]
     
-    # Analyze productivity by hour
-    hour_productivity = defaultdict(list)
+    # Calculate averages for ML model input
+    avg_productivity = sum(log.get("productivity_score", 5.0) for log in logs) / len(logs)
+    avg_study_hours = sum(log.get("study_hours", 0) for log in logs) / len(logs)
     
-    for log in logs:
-        score = log.get("productivity_score", 5.0)
-        study_hours = log.get("study_hours", 0)
-        
-        # Estimate productive hours based on study patterns
-        if study_hours > 0:
-            # Assume study happened in morning (9-12) or evening (18-22)
-            if score >= 7:
-                hour_productivity[9].append(score)
-                hour_productivity[10].append(score)
-                hour_productivity[19].append(score)
-                hour_productivity[20].append(score)
+    # Get user profile for wake/sleep times
+    from database import students_collection
+    student = students_collection.find_one({"user_id": user_id})
+    survey = student.get("survey", {}) if student else {}
+    wake = survey.get("wakeup_time", "07:00")
+    sleep = survey.get("sleep_time", "22:00")
     
-    # Calculate average productivity per hour
-    hour_scores = {}
-    for hour, scores in hour_productivity.items():
-        hour_scores[hour] = sum(scores) / len(scores) if scores else 0
+    wake_hour = int(wake.split(":")[0]) if ":" in wake else 7
+    sleep_hour = int(sleep.split(":")[0]) if ":" in sleep else 22
     
-    # Find best time ranges
+    # Use ML model to predict best study hour
+    today = datetime.now()
+    prediction = predict_best_study_hour(
+        wakeup_hour=wake_hour,
+        sleep_hour=sleep_hour,
+        study_hours_yesterday=avg_study_hours,
+        productivity_yesterday=avg_productivity,
+        day_of_week=today.weekday(),
+        has_class_today=False,  # Can be enhanced
+        screen_time=survey.get("screen_time", 5.0),
+        exercise_duration=0.0
+    )
+    
+    best_hour = int(prediction['best_hour'])
+    confidence = prediction['confidence']
+    
+    # Create productive ranges around predicted hour
     productive_ranges = []
     
-    # Morning peak (9-11)
-    morning_avg = sum(hour_scores.get(h, 0) for h in range(9, 12)) / 3
-    if morning_avg >= 6:
-        productive_ranges.append({"start_hour": 9, "end_hour": 11, "score": morning_avg})
+    # Primary range around predicted hour
+    start_hour = max(6, best_hour - 1)
+    end_hour = min(23, best_hour + 2)
+    productive_ranges.append({
+        "start_hour": start_hour,
+        "end_hour": end_hour,
+        "score": confidence * 10
+    })
     
-    # Evening peak (19-21)
-    evening_avg = sum(hour_scores.get(h, 0) for h in range(19, 22)) / 3
-    if evening_avg >= 6:
-        productive_ranges.append({"start_hour": 19, "end_hour": 21, "score": evening_avg})
-    
-    # Afternoon (14-16) if productive
-    afternoon_avg = sum(hour_scores.get(h, 0) for h in range(14, 17)) / 3
-    if afternoon_avg >= 6:
-        productive_ranges.append({"start_hour": 14, "end_hour": 16, "score": afternoon_avg})
-    
-    if not productive_ranges:
-        return [
-            {"start_hour": 9, "end_hour": 11, "score": 7},
-            {"start_hour": 19, "end_hour": 21, "score": 6}
-        ]
+    # Secondary range (opposite time of day)
+    if best_hour < 14:  # Morning person
+        productive_ranges.append({"start_hour": 19, "end_hour": 21, "score": 6})
+    else:  # Evening person
+        productive_ranges.append({"start_hour": 9, "end_hour": 11, "score": 6})
     
     return sorted(productive_ranges, key=lambda x: x["score"], reverse=True)
 
