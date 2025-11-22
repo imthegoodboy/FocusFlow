@@ -62,63 +62,68 @@ function DashboardContent() {
 
   return (
     <DashboardLayout profile={profile}>
-      <div className="grid xl:grid-cols-[2fr,1fr] gap-6">
-        <div className="space-y-6">
-          {/* Productivity Score Card */}
-          {productivityScore !== null && totalToday > 0 && (
-            <div className="bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 rounded-2xl border-2 border-primary-400 shadow-2xl p-6 text-white">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-semibold opacity-90 mb-1">Today's Productivity</p>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-5xl font-black">{productivityScore}</span>
-                    <span className="text-2xl font-bold opacity-80">/10</span>
-                  </div>
-                  <p className="text-sm mt-2 opacity-90">
-                    {completedToday} of {totalToday} tasks completed
-                  </p>
-                </div>
-                <div className="text-right">
-                  <div className="w-24 h-24 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center mb-2">
-                    <span className="text-4xl">
-                      {productivityScore === 10 ? '🏆' : productivityScore >= 7 ? '⭐' : productivityScore >= 5 ? '👍' : '💪'}
-                    </span>
-                  </div>
-                  <p className="text-xs font-semibold opacity-90">
-                    {productivityScore === 10 ? 'Perfect!' : productivityScore >= 7 ? 'Great!' : productivityScore >= 5 ? 'Good!' : 'Keep going!'}
-                  </p>
-                </div>
-              </div>
-              {/* Progress Bar */}
-              <div className="mt-4 bg-white/20 rounded-full h-3 overflow-hidden">
-                <div 
-                  className="bg-white h-full rounded-full transition-all duration-500"
-                  style={{ width: `${productivityScore * 10}%` }}
-                />
-              </div>
-            </div>
-          )}
+      <div className="space-y-6">
+        {/* Quick Stats */}
+        <QuickStats />
 
-          {/* Add Daily Task Button */}
-          <div className="bg-gradient-to-r from-primary-500 to-primary-600 rounded-2xl border border-primary-400 shadow-xl p-8 text-center">
-            <h2 className="text-3xl font-bold text-white mb-3">Ready to plan your day?</h2>
-            <p className="text-primary-50 mb-6">
-              Add your tasks and let our AI create the perfect schedule for you
-            </p>
-            <Link
-              href="/plan"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-white text-primary-600 font-bold text-lg hover:bg-primary-50 transition shadow-lg"
-            >
-              <span>➕</span>
-              Add Daily Tasks
-            </Link>
+        <div className="grid xl:grid-cols-[2fr,1fr] gap-6">
+          <div className="space-y-6">
+            {/* Productivity Score Card */}
+            {productivityScore !== null && totalToday > 0 && (
+              <div className="bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 rounded-2xl border-2 border-primary-400 shadow-2xl p-6 text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-semibold opacity-90 mb-1">Today's Productivity</p>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-5xl font-black">{productivityScore}</span>
+                      <span className="text-2xl font-bold opacity-80">/10</span>
+                    </div>
+                    <p className="text-sm mt-2 opacity-90">
+                      {completedToday} of {totalToday} tasks completed
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <div className="w-24 h-24 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center mb-2">
+                      <span className="text-4xl">
+                        {productivityScore === 10 ? '🏆' : productivityScore >= 7 ? '⭐' : productivityScore >= 5 ? '👍' : '💪'}
+                      </span>
+                    </div>
+                    <p className="text-xs font-semibold opacity-90">
+                      {productivityScore === 10 ? 'Perfect!' : productivityScore >= 7 ? 'Great!' : productivityScore >= 5 ? 'Good!' : 'Keep going!'}
+                    </p>
+                  </div>
+                </div>
+                {/* Progress Bar */}
+                <div className="mt-4 bg-white/20 rounded-full h-3 overflow-hidden">
+                  <div 
+                    className="bg-white h-full rounded-full transition-all duration-500"
+                    style={{ width: `${productivityScore * 10}%` }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Add Daily Task Button */}
+            <div className="bg-gradient-to-r from-primary-500 to-primary-600 rounded-2xl border border-primary-400 shadow-xl p-8 text-center">
+              <h2 className="text-3xl font-bold text-white mb-3">Ready to plan your day?</h2>
+              <p className="text-primary-50 mb-6">
+                Add your tasks and let our AI create the perfect schedule for you
+              </p>
+              <Link
+                href="/plan"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-white text-primary-600 font-bold text-lg hover:bg-primary-50 transition shadow-lg"
+              >
+                <span>➕</span>
+                Add Daily Tasks
+              </Link>
+            </div>
+            <TodayTasksList tasks={tasks} loading={tasksLoading} onRefresh={refresh} currentTime={now} />
+            <FocusTimer activeTask={activeTask} />
           </div>
-          <TodayTasksList tasks={tasks} loading={tasksLoading} onRefresh={refresh} currentTime={now} />
-          <FocusTimer activeTask={activeTask} />
+          <aside className="space-y-6">
+            <StreaksDisplay refreshKey={tasks.map((task) => `${task.id}-${task.status}`).join('|')} />
+          </aside>
         </div>
-        <aside className="space-y-6">
-          <StreaksDisplay refreshKey={tasks.map((task) => `${task.id}-${task.status}`).join('|')} />
-        </aside>
       </div>
     </DashboardLayout>
   );
