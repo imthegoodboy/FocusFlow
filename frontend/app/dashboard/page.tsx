@@ -9,6 +9,7 @@ import TodayTasksList from '@/components/TodayTasksList';
 import FocusTimer from '@/components/FocusTimer';
 import QuickStats from '@/components/QuickStats';
 import MotivationalQuote from '@/components/MotivationalQuote';
+import AchievementsPanel from '@/components/AchievementsPanel';
 import { useStudentProfile } from '@/hooks/useStudentProfile';
 import { useTodayTasks, PlannedTask } from '@/hooks/useTodayTasks';
 
