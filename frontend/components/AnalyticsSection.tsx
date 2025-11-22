@@ -213,7 +213,7 @@ export default function AnalyticsSection() {
       {/* Monthly Progress */}
       {monthlyProgress.length > 0 && (
         <div className="bg-white p-6 rounded-xl shadow-lg border-2 border-primary-100">
-          <h3 className="text-xl font-bold mb-4 text-slate-900">📈 Monthly Progress</h3>
+          <h3 className="text-xl font-bold mb-4 text-slate-900">📈 Monthly Progress (Last 6 Months)</h3>
           <ResponsiveContainer width="100%" height={300}>
             <AreaChart data={monthlyProgress}>
               <defs>
@@ -232,9 +232,122 @@ export default function AnalyticsSection() {
                 stroke="#f97316"
                 fillOpacity={1}
                 fill="url(#colorProgress)"
+                name="Productivity Score"
               />
             </AreaChart>
           </ResponsiveContainer>
+        </div>
+      )}
+
+      {/* Task Comparison - This Week vs Last Week */}
+      {taskComparison && (
+        <div className="bg-white p-6 rounded-xl shadow-lg border-2 border-primary-100">
+          <h3 className="text-xl font-bold mb-4 text-slate-900">📊 Week Comparison</h3>
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            <div className="bg-blue-50 rounded-xl p-4 border-2 border-blue-200">
+              <p className="text-sm font-semibold text-blue-700 mb-2">This Week</p>
+              <p className="text-3xl font-black text-blue-600">{taskComparison.this_week?.completed || 0}</p>
+              <p className="text-xs text-blue-600 mt-1">tasks completed</p>
+            </div>
+            <div className="bg-purple-50 rounded-xl p-4 border-2 border-purple-200">
+              <p className="text-sm font-semibold text-purple-700 mb-2">Last Week</p>
+              <p className="text-3xl font-black text-purple-600">{taskComparison.last_week?.completed || 0}</p>
+              <p className="text-xs text-purple-600 mt-1">tasks completed</p>
+            </div>
+          </div>
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border-2 border-green-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-green-700 mb-1">Improvement</p>
+                <p className={`text-2xl font-black ${taskComparison.improvement >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {taskComparison.improvement >= 0 ? '+' : ''}{taskComparison.improvement || 0}
+                </p>
+              </div>
+              <span className="text-4xl">
+                {taskComparison.improvement >= 0 ? '📈' : '📉'}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Productivity Trends */}
+      {productivityTrends.length > 0 && (
+        <div className="bg-white p-6 rounded-xl shadow-lg border-2 border-primary-100">
+          <h3 className="text-xl font-bold mb-4 text-slate-900">📉 Productivity Trends (Last 30 Days)</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={productivityTrends}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="productivity" stroke="#f97316" name="Productivity Score" strokeWidth={3} />
+              <Line type="monotone" dataKey="study_hours" stroke="#3b82f6" name="Study Hours" strokeWidth={2} />
+              <Line type="monotone" dataKey="tasks_completed" stroke="#22c55e" name="Tasks Completed" strokeWidth={2} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+
+      {/* Improvement Progress Bars */}
+      {taskStats && (
+        <div className="bg-white p-6 rounded-xl shadow-lg border-2 border-primary-100">
+          <h3 className="text-xl font-bold mb-4 text-slate-900">🎯 Improvement Metrics</h3>
+          <div className="space-y-4">
+            <div>
+              <div className="flex justify-between mb-2">
+                <span className="font-semibold text-slate-700">Task Completion Rate</span>
+                <span className="font-bold text-primary-600">{taskStats.completion_rate?.toFixed(1) || 0}%</span>
+              </div>
+              <div className="w-full bg-slate-200 rounded-full h-4">
+                <div 
+                  className="bg-gradient-to-r from-primary-500 to-primary-600 h-4 rounded-full transition-all duration-500"
+                  style={{ width: `${taskStats.completion_rate || 0}%` }}
+                />
+              </div>
+            </div>
+            {taskStats.by_priority && (
+              <div className="grid md:grid-cols-3 gap-4">
+                <div>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-sm font-semibold text-red-700">High Priority</span>
+                    <span className="text-sm font-bold text-red-600">{taskStats.by_priority.high || 0}</span>
+                  </div>
+                  <div className="w-full bg-red-100 rounded-full h-3">
+                    <div 
+                      className="bg-red-500 h-3 rounded-full transition-all duration-500"
+                      style={{ width: `${((taskStats.by_priority.high || 0) / (taskStats.total || 1)) * 100}%` }}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-sm font-semibold text-yellow-700">Medium Priority</span>
+                    <span className="text-sm font-bold text-yellow-600">{taskStats.by_priority.medium || 0}</span>
+                  </div>
+                  <div className="w-full bg-yellow-100 rounded-full h-3">
+                    <div 
+                      className="bg-yellow-500 h-3 rounded-full transition-all duration-500"
+                      style={{ width: `${((taskStats.by_priority.medium || 0) / (taskStats.total || 1)) * 100}%` }}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-sm font-semibold text-blue-700">Low Priority</span>
+                    <span className="text-sm font-bold text-blue-600">{taskStats.by_priority.low || 0}</span>
+                  </div>
+                  <div className="w-full bg-blue-100 rounded-full h-3">
+                    <div 
+                      className="bg-blue-500 h-3 rounded-full transition-all duration-500"
+                      style={{ width: `${((taskStats.by_priority.low || 0) / (taskStats.total || 1)) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
