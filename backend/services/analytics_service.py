@@ -288,9 +288,14 @@ def get_productivity_trends(user_id: str) -> List[Dict]:
     # Group by date
     daily_data = {}
     for log in logs:
-        log_date = log["date"]
+        log_date = log.get("date")
         if isinstance(log_date, str):
-            log_date = datetime.fromisoformat(log_date).date()
+            try:
+                log_date = datetime.fromisoformat(log_date).date()
+            except:
+                continue
+        elif not isinstance(log_date, date):
+            continue
         date_key = log_date.isoformat()
         
         if date_key not in daily_data:
@@ -304,9 +309,14 @@ def get_productivity_trends(user_id: str) -> List[Dict]:
     # Count tasks completed per day
     for task in tasks:
         if task.get("status") == "completed" and task.get("completed_at"):
-            completed_at = task["completed_at"]
+            completed_at = task.get("completed_at")
             if isinstance(completed_at, str):
-                completed_at = datetime.fromisoformat(completed_at)
+                try:
+                    completed_at = datetime.fromisoformat(completed_at.replace("Z", "+00:00"))
+                except:
+                    continue
+            elif not isinstance(completed_at, datetime):
+                continue
             date_key = completed_at.date().isoformat()
             if date_key in daily_data:
                 daily_data[date_key]["tasks_completed"] += 1
