@@ -72,9 +72,9 @@ export default function TodayTasksList({ tasks, loading, onRefresh, currentTime 
           return (
             <div
               key={task.id}
-              className={`bg-slate-50 border ${
-                isActive ? 'border-primary-300' : 'border-slate-100'
-              } rounded-2xl px-4 py-3 flex items-center justify-between gap-4`}
+              className={`bg-slate-50 border-2 ${
+                isActive ? 'border-primary-400 bg-primary-50 shadow-lg' : 'border-slate-200'
+              } rounded-2xl px-5 py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition hover:shadow-md`}
             >
               <div>
                 <div className="flex items-center gap-2">
