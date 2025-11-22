@@ -269,8 +269,7 @@ The AI model structure is defined in `backend/models/ai_model.py`. Currently, it
 3. Set secure SECRET_KEY
 4. Build frontend: `npm run build`
 5. Use a production server (e.g., Gunicorn for FastAPI)
-
-## License
+ 
 
 This project is created for educational purposes.
 
