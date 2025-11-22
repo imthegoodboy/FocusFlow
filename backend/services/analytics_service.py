@@ -191,30 +191,123 @@ def calculate_sleep_hours(wakeup_time: Optional[str], sleep_time: Optional[str])
     except:
         return 0.0
 
-def get_monthly_progress(user_id: str) -> Dict:
-    """Get monthly progress summary"""
+def get_monthly_progress(user_id: str) -> List[Dict]:
+    """Get monthly progress data for the last 6 months"""
     today = date.today()
-    month_start = date(today.year, today.month, 1)
+    result = []
+    
+    for i in range(6):
+        month_date = date(today.year, today.month, 1) - timedelta(days=30 * i)
+        month_start = date(month_date.year, month_date.month, 1)
+        
+        if month_date.month == 12:
+            month_end = date(month_date.year + 1, 1, 1)
+        else:
+            month_end = date(month_date.year, month_date.month + 1, 1)
+        
+        logs = list(routine_logs_collection.find({
+            "user_id": user_id,
+            "date": {"$gte": month_start.isoformat(), "$lt": month_end.isoformat()}
+        }))
+        
+        tasks = list(tasks_collection.find({
+            "user_id": user_id,
+            "created_at": {"$gte": datetime(month_start.year, month_start.month, 1), 
+                          "$lt": datetime(month_end.year, month_end.month, 1)}
+        }))
+        
+        total_study_hours = sum(log.get("study_hours", 0) for log in logs)
+        avg_productivity = sum(log.get("productivity_score", 0) for log in logs) / len(logs) if logs else 0
+        tasks_completed = len([t for t in tasks if t.get("status") == "completed"])
+        total_tasks = len(tasks)
+        
+        result.append({
+            "month": month_start.strftime("%b %Y"),
+            "progress_score": round(avg_productivity, 1),
+            "study_hours": round(total_study_hours, 1),
+            "tasks_completed": tasks_completed,
+            "total_tasks": total_tasks,
+            "completion_rate": round((tasks_completed / total_tasks * 100) if total_tasks > 0 else 0, 1)
+        })
+    
+    return list(reversed(result))
+
+def get_task_comparison(user_id: str) -> Dict:
+    """Get task comparison data (this week vs last week)"""
+    today = date.today()
+    this_week_start = today - timedelta(days=today.weekday())
+    last_week_start = this_week_start - timedelta(days=7)
+    last_week_end = this_week_start
+    
+    this_week_tasks = list(tasks_collection.find({
+        "user_id": user_id,
+        "created_at": {"$gte": datetime(this_week_start.year, this_week_start.month, this_week_start.day)}
+    }))
+    
+    last_week_tasks = list(tasks_collection.find({
+        "user_id": user_id,
+        "created_at": {
+            "$gte": datetime(last_week_start.year, last_week_start.month, last_week_start.day),
+            "$lt": datetime(last_week_end.year, last_week_end.month, last_week_end.day)
+        }
+    }))
+    
+    this_week_completed = len([t for t in this_week_tasks if t.get("status") == "completed"])
+    last_week_completed = len([t for t in last_week_tasks if t.get("status") == "completed"])
+    
+    return {
+        "this_week": {
+            "total": len(this_week_tasks),
+            "completed": this_week_completed,
+            "pending": len([t for t in this_week_tasks if t.get("status") == "pending"])
+        },
+        "last_week": {
+            "total": len(last_week_tasks),
+            "completed": last_week_completed,
+            "pending": len([t for t in last_week_tasks if t.get("status") == "pending"])
+        },
+        "improvement": this_week_completed - last_week_completed
+    }
+
+def get_productivity_trends(user_id: str) -> List[Dict]:
+    """Get productivity trends over time"""
+    thirty_days_ago = date.today() - timedelta(days=30)
     
     logs = list(routine_logs_collection.find({
         "user_id": user_id,
-        "date": {"$gte": month_start.isoformat()}
-    }))
+        "date": {"$gte": thirty_days_ago.isoformat()}
+    }).sort("date", 1))
     
     tasks = list(tasks_collection.find({
         "user_id": user_id,
-        "created_at": {"$gte": datetime(month_start.year, month_start.month, 1)}
+        "created_at": {"$gte": datetime(thirty_days_ago.year, thirty_days_ago.month, thirty_days_ago.day)}
     }))
     
-    total_study_hours = sum(log.get("study_hours", 0) for log in logs)
-    avg_productivity = sum(log.get("productivity_score", 0) for log in logs) / len(logs) if logs else 0
-    tasks_completed = len([t for t in tasks if t.get("status") == "completed"])
+    # Group by date
+    daily_data = {}
+    for log in logs:
+        log_date = log["date"]
+        if isinstance(log_date, str):
+            log_date = datetime.fromisoformat(log_date).date()
+        date_key = log_date.isoformat()
+        
+        if date_key not in daily_data:
+            daily_data[date_key] = {
+                "date": date_key,
+                "productivity": log.get("productivity_score", 0),
+                "study_hours": log.get("study_hours", 0),
+                "tasks_completed": 0
+            }
     
-    return {
-        "month": month_start.strftime("%B %Y"),
-        "total_study_hours": total_study_hours,
-        "avg_productivity": round(avg_productivity, 2),
-        "tasks_completed": tasks_completed,
-        "days_logged": len(logs)
-    }
+    # Count tasks completed per day
+    for task in tasks:
+        if task.get("status") == "completed" and task.get("completed_at"):
+            completed_at = task["completed_at"]
+            if isinstance(completed_at, str):
+                completed_at = datetime.fromisoformat(completed_at)
+            date_key = completed_at.date().isoformat()
+            if date_key in daily_data:
+                daily_data[date_key]["tasks_completed"] += 1
+    
+    return sorted([v for v in daily_data.values()], key=lambda x: x["date"])
 
