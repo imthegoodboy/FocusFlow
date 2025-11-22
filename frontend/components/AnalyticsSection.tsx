@@ -243,7 +243,7 @@ export default function AnalyticsSection() {
       )}
 
       {/* Task Comparison - This Week vs Last Week */}
-      {taskComparison && (
+      {taskComparison && taskComparison.this_week && (
         <div className="bg-white p-6 rounded-xl shadow-lg border-2 border-primary-100">
           <h3 className="text-xl font-bold mb-4 text-slate-900">📊 Week Comparison</h3>
           <div className="grid md:grid-cols-2 gap-6 mb-6">
