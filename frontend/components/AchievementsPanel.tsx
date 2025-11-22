@@ -21,25 +21,34 @@ export default function AchievementsPanel() {
 
   const loadAchievements = async () => {
     try {
-      // Get user stats
-      const [tasks, streaks] = await Promise.all([
-        api.get('/api/tasks?today=true'),
-        api.get('/api/streaks'),
-      ]);
-
-      const todayTasks = tasks.data || [];
-      const completedToday = todayTasks.filter((t: any) => t.status === 'completed').length;
-      const totalToday = todayTasks.length;
-      const streak = streaks.data?.overall_streak || 0;
-
-      setAchievements({
-        perfect_day: totalToday > 0 && completedToday === totalToday,
-        week_streak: streak >= 7,
-        productivity_master: completedToday >= 5,
-        task_warrior: totalToday >= 5,
-      });
+      const response = await api.get('/api/achievements');
+      setAchievements(response.data);
     } catch (error) {
       console.error('Failed to load achievements', error);
+      // Fallback calculation
+      try {
+        const [tasks, streaks] = await Promise.all([
+          api.get('/api/tasks?today=true'),
+          api.get('/api/streaks'),
+        ]);
+        const todayTasks = tasks.data || [];
+        const completedToday = todayTasks.filter((t: any) => t.status === 'completed').length;
+        const totalToday = todayTasks.length;
+        const streak = streaks.data?.overall_streak || 0;
+        setAchievements({
+          perfect_day: totalToday > 0 && completedToday === totalToday,
+          week_streak: streak >= 7,
+          productivity_master: completedToday >= 5,
+          task_warrior: totalToday >= 5,
+        });
+      } catch (fallbackError) {
+        setAchievements({
+          perfect_day: false,
+          week_streak: false,
+          productivity_master: false,
+          task_warrior: false,
+        });
+      }
     } finally {
       setLoading(false);
     }
