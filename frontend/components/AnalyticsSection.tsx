@@ -29,6 +29,8 @@ export default function AnalyticsSection() {
   const [focusHours, setFocusHours] = useState<any>(null);
   const [sleepData, setSleepData] = useState<any[]>([]);
   const [monthlyProgress, setMonthlyProgress] = useState<any[]>([]);
+  const [taskComparison, setTaskComparison] = useState<any>(null);
+  const [productivityTrends, setProductivityTrends] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,13 +39,15 @@ export default function AnalyticsSection() {
 
   const loadAnalytics = async () => {
     try {
-      const [daily, weekly, tasks, focus, sleep, monthly] = await Promise.all([
+      const [daily, weekly, tasks, focus, sleep, monthly, comparison, trends] = await Promise.all([
         api.get('/api/analytics/daily-productivity?days=7'),
         api.get('/api/analytics/weekly-productivity?weeks=4'),
         api.get('/api/analytics/task-statistics'),
         api.get('/api/analytics/focus-hours'),
         api.get('/api/analytics/sleep-performance'),
         api.get('/api/analytics/monthly-progress'),
+        api.get('/api/analytics/task-comparison'),
+        api.get('/api/analytics/productivity-trends'),
       ]);
 
       setDailyData(daily.data.data || []);
@@ -52,6 +56,8 @@ export default function AnalyticsSection() {
       setFocusHours(focus.data);
       setSleepData(sleep.data.data || []);
       setMonthlyProgress(monthly.data.data || []);
+      setTaskComparison(comparison.data);
+      setProductivityTrends(trends.data.data || []);
     } catch (error) {
       console.error('Failed to load analytics', error);
     } finally {
