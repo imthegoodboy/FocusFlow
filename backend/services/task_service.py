@@ -8,10 +8,12 @@ except ImportError:
 
 from fastapi import HTTPException
 
-from database import students_collection, tasks_collection
+from database import students_collection, tasks_collection, routine_logs_collection
 from models.task import PlanDayRequest, PlanTaskItem, PlannedTaskInput, TaskCreate, TaskUpdate
 from services.scheduler import check_conflicts, schedule_task
 from services.streak_service import update_streaks
+from models.ml_models import predict_optimal_schedule_time, predict_best_study_hour
+from services.gemini_service import generate_scheduling_reason
 
 def _ensure_naive(dt: datetime) -> datetime:
     if dt.tzinfo:
