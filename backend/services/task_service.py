@@ -234,8 +234,37 @@ def _build_plan(user_id: str, tasks: List[PlanTaskItem]) -> List[dict]:
     blocked = _build_blocks(today, class_schedule)
     planned: List[dict] = []
     
-    # TODO: Replace with AI model for intelligent priority ordering
-    # AI should consider: task dependencies, deadlines, energy levels, user history
+    # Get user's historical data for ML model predictions
+    thirty_days_ago = datetime.now() - timedelta(days=30)
+    recent_logs = list(routine_logs_collection.find({
+        "user_id": user_id,
+        "created_at": {"$gte": thirty_days_ago}
+    }).sort("created_at", -1).limit(30))
+    
+    # Calculate average productivity and study patterns
+    avg_productivity = 5.0
+    avg_study_hours = 0.0
+    if recent_logs:
+        avg_productivity = sum(log.get("productivity_score", 5) for log in recent_logs) / len(recent_logs)
+        avg_study_hours = sum(log.get("study_hours", 0) for log in recent_logs) / len(recent_logs)
+    
+    # Get user's best study hour using ML model
+    wake_hour = int(wake.split(":")[0]) if ":" in wake else 7
+    sleep_hour = int(sleep.split(":")[0]) if ":" in sleep else 22
+    
+    best_study_prediction = predict_best_study_hour(
+        wakeup_hour=wake_hour,
+        sleep_hour=sleep_hour,
+        study_hours_yesterday=avg_study_hours,
+        productivity_yesterday=avg_productivity,
+        day_of_week=today.weekday(),
+        has_class_today=len(class_schedule) > 0,
+        screen_time=survey.get("screen_time", 5.0),
+        exercise_duration=0.0  # Can be enhanced with actual data
+    )
+    best_study_hour = int(best_study_prediction['best_hour'])
+    
+    # Sort tasks by priority (keep priority-based sorting)
     priority_order = {"high": 3, "medium": 2, "low": 1}
     tasks_sorted = sorted(tasks, key=lambda t: -priority_order.get(t.priority, 1))
     sequence = 1
@@ -243,20 +272,76 @@ def _build_plan(user_id: str, tasks: List[PlanTaskItem]) -> List[dict]:
     for item in tasks_sorted:
         duration = timedelta(minutes=item.duration)
         
-        # TODO: Replace with AI model for optimal time slot selection
-        # AI should consider: user's peak focus hours, task type, historical performance
-        slot_start = _find_next_slot(current, duration, blocked, day_end)
+        # Use ML model to predict optimal scheduling time
+        current_hour = current.hour
+        deadline_hours = 24  # Default, can be enhanced with actual deadline
+        
+        # Check if there's a class at current time
+        has_class = any(
+            block[0] <= current <= block[1] 
+            for block in blocked
+        )
+        
+        # Get user productivity at current hour (simplified)
+        user_productivity = avg_productivity
+        
+        # Predict optimal hour using ML model
+        optimal_prediction = predict_optimal_schedule_time(
+            task_priority=item.priority,
+            task_duration=item.duration,
+            deadline_hours_away=deadline_hours,
+            current_hour=current_hour,
+            user_productivity_at_hour=user_productivity,
+            has_class_at_time=has_class,
+            day_of_week=today.weekday(),
+            tasks_already_scheduled=sequence - 1,
+            user_energy_level=min(10, avg_productivity + 2)  # Estimate energy from productivity
+        )
+        
+        optimal_hour = int(optimal_prediction['optimal_hour'])
+        
+        # Try to schedule at optimal hour, but respect constraints
+        candidate_start = datetime.combine(today, time(optimal_hour, 0))
+        
+        # Adjust if optimal time conflicts with classes or is in the past
+        if candidate_start < current:
+            candidate_start = current
+        if candidate_start < datetime.combine(today, _parse_time(wake)):
+            candidate_start = datetime.combine(today, _parse_time(wake))
+        
+        # Check if candidate conflicts with classes
+        conflicts_with_class = any(
+            candidate_start < block[1] and (candidate_start + duration) > block[0]
+            for block in blocked
+        )
+        
+        if conflicts_with_class:
+            # Fall back to finding next available slot
+            slot_start = _find_next_slot(current, duration, blocked, day_end)
+        else:
+            # Use ML-predicted optimal time
+            slot_start = candidate_start
+        
+        if slot_start is None:
+            slot_start = _find_next_slot(current, duration, blocked, day_end)
+        
         if slot_start is None:
             raise HTTPException(status_code=400, detail="Unable to schedule all tasks before bedtime.")
 
         slot_end = slot_start + duration
         
-        # TODO: Replace with AI-generated personalized explanations
-        # AI should generate contextual reasons like:
-        # - "Scheduled during your peak focus hours (9-11 AM)"
-        # - "Placed before lunch to maintain momentum"
-        # - "High priority task scheduled early to reduce stress"
-        reason = _build_reason(item, slot_start, class_schedule)
+        # Use Gemini API to generate personalized explanation
+        scheduled_time_str = slot_start.strftime('%I:%M %p')
+        user_context = {
+            'focus_hours': [best_study_hour],
+            'productivity_score': avg_productivity
+        }
+        reason = generate_scheduling_reason(
+            task_name=item.name,
+            scheduled_time=scheduled_time_str,
+            priority=item.priority,
+            user_context=user_context
+        )
 
         planned.append(
             {
