@@ -287,33 +287,56 @@ export default function TodayTasksList({ tasks, loading, onRefresh, currentTime 
                 </button>
               </div>
             </div>
-          );
-        })}
-      </div>
-      )}
-      {celebration && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-3xl shadow-2xl p-6 text-center space-y-4 max-w-md">
-            <div className="w-56 h-56 mx-auto">
+      {/* Celebration Modals */}
+      {celebration === 'single' && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn">
+          <div className="bg-white rounded-3xl shadow-2xl p-8 text-center space-y-6 max-w-md mx-4 animate-scaleIn">
+            <div className="w-48 h-48 mx-auto">
               <iframe
                 src="https://lottie.host/embed/7323a841-b2f4-4dc3-be96-0803db57e5e5/kNOzEYcYFL.lottie"
                 className="w-full h-full border-0"
                 title="Celebration"
               />
             </div>
-            <h3 className="text-2xl font-bold text-slate-900">
-              {celebration === 'all' ? 'Legend! All tasks complete.' : 'Task done! Keep it up.'}
-            </h3>
-            <p className="text-slate-500">
-              {celebration === 'all'
-                ? 'Your streak has been updated and analytics reflect the win.'
-                : 'We logged this completion and nudged your streak.'}
-            </p>
+            <div>
+              <h3 className="text-3xl font-black text-slate-900 mb-2">🎉 Congratulations!</h3>
+              <p className="text-lg text-slate-600 mb-4">Task completed successfully!</p>
+              <p className="text-sm text-slate-500">Your productivity score has been updated.</p>
+            </div>
             <button
               onClick={() => setCelebration(null)}
-              className="px-4 py-2 rounded-xl bg-primary-500 text-white font-semibold hover:bg-primary-600"
+              className="px-8 py-4 rounded-xl bg-primary-500 text-white font-bold text-lg hover:bg-primary-600 transition shadow-lg w-full"
             >
-              Continue
+              Awesome! Continue
+            </button>
+          </div>
+        </div>
+      )}
+
+      {celebration === 'all' && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn">
+          <div className="bg-gradient-to-br from-green-400 to-green-600 rounded-3xl shadow-2xl p-10 text-center space-y-6 max-w-lg mx-4 animate-scaleIn text-white">
+            <div className="w-64 h-64 mx-auto">
+              <iframe
+                src="https://lottie.host/embed/7323a841-b2f4-4dc3-be96-0803db57e5e5/kNOzEYcYFL.lottie"
+                className="w-full h-full border-0"
+                title="Celebration"
+              />
+            </div>
+            <div>
+              <h3 className="text-4xl font-black mb-3">🏆 PERFECT SCORE!</h3>
+              <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 mb-4">
+                <p className="text-6xl font-black mb-2">10/10</p>
+                <p className="text-xl font-bold">Productivity Points</p>
+              </div>
+              <p className="text-lg font-semibold mb-2">All tasks completed! 🎊</p>
+              <p className="text-green-100">You're a productivity champion! Your streak and analytics have been updated.</p>
+            </div>
+            <button
+              onClick={() => setCelebration(null)}
+              className="px-8 py-4 rounded-xl bg-white text-green-600 font-bold text-lg hover:bg-green-50 transition shadow-xl w-full"
+            >
+              🚀 Keep Going!
             </button>
           </div>
         </div>
