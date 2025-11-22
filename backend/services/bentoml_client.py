@@ -12,7 +12,6 @@ from typing import Dict, Optional
 from config import settings
 
 # BentoML endpoint - Update this with your actual BentoML service URL
-from config import settings
 BENTOML_ENDPOINT = os.getenv("BENTOML_ENDPOINT", getattr(settings, "BENTOML_ENDPOINT", "http://localhost:3000/predict"))
 BENTOML_TIMEOUT = 10  # seconds
 
