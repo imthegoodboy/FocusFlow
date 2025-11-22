@@ -73,22 +73,22 @@ export default function AnalyticsSection() {
       {/* Task Statistics */}
       {taskStats && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
-            <p className="text-sm text-gray-600">Total Tasks</p>
-            <p className="text-2xl font-bold text-primary-600">{taskStats.total}</p>
+          <div className="bg-white p-6 rounded-xl shadow-lg border-2 border-primary-200 hover:shadow-xl transition">
+            <p className="text-sm font-semibold text-gray-600 mb-2">📋 Total Tasks</p>
+            <p className="text-4xl font-black text-primary-600">{taskStats.total || 0}</p>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
-            <p className="text-sm text-gray-600">Completed</p>
-            <p className="text-2xl font-bold text-green-600">{taskStats.completed}</p>
+          <div className="bg-white p-6 rounded-xl shadow-lg border-2 border-green-200 hover:shadow-xl transition">
+            <p className="text-sm font-semibold text-gray-600 mb-2">✅ Completed</p>
+            <p className="text-4xl font-black text-green-600">{taskStats.completed || 0}</p>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
-            <p className="text-sm text-gray-600">Pending</p>
-            <p className="text-2xl font-bold text-yellow-600">{taskStats.pending}</p>
+          <div className="bg-white p-6 rounded-xl shadow-lg border-2 border-yellow-200 hover:shadow-xl transition">
+            <p className="text-sm font-semibold text-gray-600 mb-2">⏳ Pending</p>
+            <p className="text-4xl font-black text-yellow-600">{taskStats.pending || 0}</p>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
-            <p className="text-sm text-gray-600">Completion Rate</p>
-            <p className="text-2xl font-bold text-primary-600">
-              {taskStats.completion_rate?.toFixed(1)}%
+          <div className="bg-white p-6 rounded-xl shadow-lg border-2 border-blue-200 hover:shadow-xl transition">
+            <p className="text-sm font-semibold text-gray-600 mb-2">📈 Completion Rate</p>
+            <p className="text-4xl font-black text-blue-600">
+              {taskStats.completion_rate?.toFixed(1) || '0.0'}%
             </p>
           </div>
         </div>
@@ -96,8 +96,8 @@ export default function AnalyticsSection() {
 
       {/* Daily Productivity Chart */}
       {dailyData.length > 0 && (
-        <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-          <h3 className="text-lg font-semibold mb-4">Daily Productivity (Last 7 Days)</h3>
+        <div className="bg-white p-6 rounded-xl shadow-lg border-2 border-primary-100">
+          <h3 className="text-xl font-bold mb-4 text-slate-900">📅 Daily Productivity (Last 7 Days)</h3>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={dailyData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -114,8 +114,8 @@ export default function AnalyticsSection() {
 
       {/* Weekly Productivity Chart */}
       {weeklyData.length > 0 && (
-        <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-          <h3 className="text-lg font-semibold mb-4">Weekly Productivity (Last 4 Weeks)</h3>
+        <div className="bg-white p-6 rounded-xl shadow-lg border-2 border-primary-100">
+          <h3 className="text-xl font-bold mb-4 text-slate-900">📆 Weekly Productivity (Last 4 Weeks)</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={weeklyData}>
               <CartesianGrid strokeDasharray="3 3" />
