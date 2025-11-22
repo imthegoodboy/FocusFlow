@@ -132,8 +132,8 @@ export default function AnalyticsSection() {
 
       {/* Focus Hours */}
       {focusHours && (
-        <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-          <h3 className="text-lg font-semibold mb-4">Focus Hours Analysis</h3>
+        <div className="bg-white p-6 rounded-xl shadow-lg border-2 border-primary-100">
+          <h3 className="text-xl font-bold mb-4 text-slate-900">🎯 Focus Hours Analysis</h3>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <p className="text-sm text-gray-600 mb-2">High Focus Hours</p>
