@@ -116,6 +116,7 @@ def get_task_statistics(user_id: str) -> Dict:
     completed = len([t for t in tasks if t.get("status") == "completed"])
     pending = len([t for t in tasks if t.get("status") == "pending"])
     in_progress = len([t for t in tasks if t.get("status") == "in_progress"])
+    cancelled = len([t for t in tasks if t.get("status") == "cancelled"])
     
     # By priority
     high_priority = len([t for t in tasks if t.get("priority") == "high"])
@@ -133,6 +134,7 @@ def get_task_statistics(user_id: str) -> Dict:
         "completed": completed,
         "pending": pending,
         "in_progress": in_progress,
+        "cancelled": cancelled,
         "completion_rate": (completed / total * 100) if total > 0 else 0,
         "by_priority": {
             "high": high_priority,
