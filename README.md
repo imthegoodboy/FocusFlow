@@ -2,12 +2,15 @@
 
 <div align="center">
 
-![FocusFlow Logo](https://via.placeholder.com/200x60/f97316/ffffff?text=FocusFlow)
+# 🎯 FocusFlow
+
+<div style="font-size: 48px; margin: 20px 0;">⚡📚🎯</div>
 
 **An intelligent productivity system that helps students optimize their daily routines using AI and machine learning**
 
 [![Demo Video](https://img.shields.io/badge/📹-Watch%20Demo-red)](https://youtu.be/xeOttl1d2bo?si=M5XENojZ4u8pFSQj)
 [![Model Training](https://img.shields.io/badge/🤖-Model%20Training-blue)](https://colab.research.google.com/drive/1AVepXQp2d71g0zdHJRLHtJ7SU8KW5DJa?usp=sharing)
+[![Tech Stack](https://img.shields.io/badge/Tech-FastAPI%20%2B%20Next.js-blue)]()
 
 </div>
 
