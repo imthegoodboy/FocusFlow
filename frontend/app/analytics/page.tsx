@@ -34,10 +34,10 @@ function AnalyticsContent() {
       <div className="space-y-6">
         <div className="flex items-center gap-4">
           <button
-            onClick={() => window.history.back()}
+            onClick={() => router.push('/dashboard')}
             className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 transition font-semibold"
           >
-            <span>←</span> Back
+            <span>←</span> Back to Dashboard
           </button>
         </div>
         <AnalyticsSection />

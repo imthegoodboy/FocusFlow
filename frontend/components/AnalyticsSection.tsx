@@ -65,7 +65,10 @@ export default function AnalyticsSection() {
 
   return (
     <div className="space-y-8">
-      <h2 className="text-2xl font-bold text-gray-800">Analytics Dashboard</h2>
+      <div className="bg-gradient-to-r from-primary-500 to-primary-600 rounded-2xl p-6 text-white">
+        <h2 className="text-3xl font-bold mb-2">📊 Analytics Dashboard</h2>
+        <p className="text-primary-50">Track your productivity, focus hours, and performance insights</p>
+      </div>
 
       {/* Task Statistics */}
       {taskStats && (
