@@ -47,9 +47,15 @@ export default function TodayTasksList({ tasks, loading, onRefresh, currentTime 
         </div>
       </div>
       {loading ? (
-        <p className="text-slate-500">Loading tasks…</p>
+        <div className="flex items-center justify-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
+          <p className="ml-3 text-slate-500">Loading tasks…</p>
+        </div>
       ) : tasks.length === 0 ? (
-        <p className="text-slate-500">No plan yet. Add tasks and tap “Plan my day”.</p>
+        <div className="text-center py-8 px-4">
+          <p className="text-lg text-slate-600 mb-2">No tasks scheduled for today</p>
+          <p className="text-sm text-slate-500">Click "Add Daily Tasks" above to get started!</p>
+        </div>
       ) : (
       <div className="space-y-3">
         {tasks.map((task) => {
