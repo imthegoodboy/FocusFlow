@@ -312,6 +312,30 @@ def _find_next_slot(current: datetime, duration: timedelta, blocks: List[tuple],
 
 
 def _build_reason(task: PlanTaskItem, start: datetime, schedule: List[dict]) -> str:
+    """
+    Generate a reason for why a task is scheduled at a specific time.
+    
+    TODO: AI MODEL INTEGRATION
+    ==========================
+    Replace this simple if-else logic with AI-generated personalized explanations.
+    
+    AI Model Input:
+    - Task details (name, priority, duration)
+    - Scheduled time
+    - User's historical productivity patterns
+    - Class schedule
+    - Time of day context
+    
+    AI Model Output:
+    - Natural language explanation of scheduling decision
+    - Personalized insights (e.g., "Your best focus hours", "After your break")
+    - Context-aware suggestions
+    
+    Example AI-generated reasons:
+    - "Scheduled at 9:00 AM during your peak focus hours based on your history"
+    - "High priority task placed early to reduce stress and ensure completion"
+    - "Positioned after your lunch break when you typically have renewed energy"
+    """
     reason = f"Prioritised as {task.priority.title()} priority at {start.strftime('%I:%M %p')}."
     if schedule:
         reason += " Adjusted to avoid classes."
