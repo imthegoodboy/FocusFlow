@@ -190,8 +190,8 @@ export default function AnalyticsSection() {
 
       {/* Sleep vs Performance */}
       {sleepData.length > 0 && (
-        <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-          <h3 className="text-lg font-semibold mb-4">Sleep vs Performance Correlation</h3>
+        <div className="bg-white p-6 rounded-xl shadow-lg border-2 border-primary-100">
+          <h3 className="text-xl font-bold mb-4 text-slate-900">😴 Sleep vs Performance Correlation</h3>
           <ResponsiveContainer width="100%" height={300}>
             <ScatterChart>
               <CartesianGrid />
@@ -206,8 +206,8 @@ export default function AnalyticsSection() {
 
       {/* Monthly Progress */}
       {monthlyProgress.length > 0 && (
-        <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-          <h3 className="text-lg font-semibold mb-4">Monthly Progress</h3>
+        <div className="bg-white p-6 rounded-xl shadow-lg border-2 border-primary-100">
+          <h3 className="text-xl font-bold mb-4 text-slate-900">📈 Monthly Progress</h3>
           <ResponsiveContainer width="100%" height={300}>
             <AreaChart data={monthlyProgress}>
               <defs>
