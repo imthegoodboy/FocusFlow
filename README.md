@@ -8,7 +8,7 @@
 
 **An intelligent productivity system that helps students optimize their daily routines using AI and machine learning**
 
-[![Demo Video](https://img.shields.io/badge/📹-Watch%20Demo-red)](https://youtu.be/bMTMQO9rgBI)
+[![Demo Video](https://img.shields.io/badge/📹-Watch%20Demo-red)](https://youtu.be/nschsG1qTXo?si=BdMVK-dmzsDc3Ta5)
 [![Model Training](https://img.shields.io/badge/🤖-Model%20Training-blue)](https://colab.research.google.com/drive/1AVepXQp2d71g0zdHJRLHtJ7SU8KW5DJa?usp=sharing)
 [![Tech Stack](https://img.shields.io/badge/Tech-FastAPI%20%2B%20Next.js-blue)]()
 
@@ -670,7 +670,7 @@ Full API documentation available at: `http://localhost:8000/docs`
 
 ## 🎥 Demo Video
 
-**Watch the complete demo:** [YouTube Video](https://youtu.be/bMTMQO9rgBI)
+**Watch the complete demo:** [YouTube Video](https://youtu.be/nschsG1qTXo?si=BdMVK-dmzsDc3Ta5)
 
 The demo showcases:
 - User registration and onboarding
