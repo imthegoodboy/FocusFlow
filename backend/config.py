@@ -9,6 +9,13 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
     GEMINI_API_KEY: str = ""  # Add your Gemini API key in .env file
     BENTOML_ENDPOINT: str = "http://localhost:3000/predict"  # BentoML service endpoint
+    ALLOWED_ORIGINS: list[str] = [
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "https://focus-flow-steel-phi.vercel.app",
+        "https://focusflow-n2j9.onrender.com",
+        "https://focus-flow-3maz0q9zg-qwdxqws-projects.vercel.app",
+    ]
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
