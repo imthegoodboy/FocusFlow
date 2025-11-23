@@ -2,6 +2,7 @@ import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from config import settings
 from fastapi.staticfiles import StaticFiles
 
 from routers import auth, tasks, routine, analytics, notifications, streaks, student, support, achievements
@@ -17,7 +18,7 @@ app = FastAPI(
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "https://focus-flow-steel-phi.vercel.app"],  # Next.js default ports
+    allow_origins=settings.ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
