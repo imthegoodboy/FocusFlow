@@ -11,10 +11,20 @@ All models are loaded from saved_models directory and used for real-time predict
 """
 
 import os
-import joblib
-import numpy as np
 from typing import Dict, List, Optional
 from datetime import datetime, date
+
+try:
+    import joblib
+    JOBLIB_AVAILABLE = True
+except Exception:
+    JOBLIB_AVAILABLE = False
+
+try:
+    import numpy as np
+    NP_AVAILABLE = True
+except Exception:
+    NP_AVAILABLE = False
 
 # Model paths
 MODEL_DIR = os.path.join(os.path.dirname(__file__), 'saved_models')
@@ -31,13 +41,13 @@ def _load_models():
     """Lazy load models when first needed"""
     global _study_time_model, _productivity_model, _scheduling_model
     
-    if _study_time_model is None and os.path.exists(STUDY_TIME_MODEL_PATH):
+    if JOBLIB_AVAILABLE and _study_time_model is None and os.path.exists(STUDY_TIME_MODEL_PATH):
         _study_time_model = joblib.load(STUDY_TIME_MODEL_PATH)
     
-    if _productivity_model is None and os.path.exists(PRODUCTIVITY_MODEL_PATH):
+    if JOBLIB_AVAILABLE and _productivity_model is None and os.path.exists(PRODUCTIVITY_MODEL_PATH):
         _productivity_model = joblib.load(PRODUCTIVITY_MODEL_PATH)
     
-    if _scheduling_model is None and os.path.exists(SCHEDULING_MODEL_PATH):
+    if JOBLIB_AVAILABLE and _scheduling_model is None and os.path.exists(SCHEDULING_MODEL_PATH):
         _scheduling_model = joblib.load(SCHEDULING_MODEL_PATH)
 
 # ============================================================================
@@ -72,7 +82,8 @@ def predict_best_study_hour(
     """
     _load_models()
     
-    if _study_time_model is None:
+    # If model or numpy not available, use heuristic
+    if _study_time_model is None or not NP_AVAILABLE:
         # Fallback to simple heuristic if model not available
         if wakeup_hour <= 7:
             best_hour = 9.0
@@ -155,7 +166,7 @@ def predict_productivity_score(
     # Fallback to local model if available
     _load_models()
     
-    if _productivity_model is not None:
+    if _productivity_model is not None and NP_AVAILABLE:
         # Prepare features
         completion_rate = tasks_completed / tasks_total if tasks_total > 0 else 0
         
@@ -230,7 +241,7 @@ def predict_optimal_schedule_time(
     """
     _load_models()
     
-    if _scheduling_model is None:
+    if _scheduling_model is None or not NP_AVAILABLE:
         # Fallback logic
         priority_map = {'low': 0, 'medium': 1, 'high': 2}
         priority_num = priority_map.get(task_priority, 1)
