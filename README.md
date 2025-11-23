@@ -670,7 +670,7 @@ Full API documentation available at: `http://localhost:8000/docs`
 
 ## 🎥 Demo Video
 
-**Watch the complete demo:** [YouTube Video](https://youtu.be/xeOttl1d2bo?si=M5XENojZ4u8pFSQj)
+**Watch the complete demo:** [YouTube Video](https://youtu.be/bMTMQO9rgBI)
 
 The demo showcases:
 - User registration and onboarding
