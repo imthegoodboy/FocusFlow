@@ -15,10 +15,18 @@
 </div>
 
 ---
-live web (frontend)- https://focus-flow-steel-phi.vercel.app
-live web ( backend ) - https://focusflow-n2j9.onrender.com
+🌐 Live Links
+Frontend (Live Web App)
+🔗 https://focus-flow-steel-phi.vercel.app
 
-live model - https://www.bentoml.com
+Backend (API Server)
+🔗 https://focusflow-n2j9.onrender.com
+
+AI Model (BentoML Deployment)
+🔗 https://www.bentoml.com
+
+YouTube Demo
+▶️ https://youtu.be/nschsG1qTXo?si=BdMVK-dmzsDc3Ta5
 
 ## 📖 Table of Contents
 
