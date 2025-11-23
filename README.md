@@ -836,6 +836,6 @@ Feel free to submit issues and enhancement requests!
 
 **Built with ❤️ for students who want to maximize their productivity**
 
-[Watch Demo](https://youtu.be/xeOttl1d2bo?si=M5XENojZ4u8pFSQj) • [View Models](https://colab.research.google.com/drive/1AVepXQp2d71g0zdHJRLHtJ7SU8KW5DJa?usp=sharing)
+[Watch Demo](https://youtu.be/nschsG1qTXo?si=7lxx5dkT-GqYRSsw) • [View Models](https://colab.research.google.com/drive/1AVepXQp2d71g0zdHJRLHtJ7SU8KW5DJa?usp=sharing)
 
 </div>
