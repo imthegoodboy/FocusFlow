@@ -17,7 +17,9 @@
 ---
 ## 🌐 Live Links
 
-
+### note -
+ backned is hosted on the RENDER and RENDER is slow so it may take sometime to login in new devices  please be patience 
+ 
 Frontend (Live Web App)
 🔗 https://focus-flow-steel-phi.vercel.app
 
